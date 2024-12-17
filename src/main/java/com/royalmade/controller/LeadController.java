@@ -1,0 +1,82 @@
+package com.royalmade.controller;
+
+import com.royalmade.dto.LeadRequestDto;
+import com.royalmade.dto.LeadResponseDto;
+import com.royalmade.entity.Lead;
+import com.royalmade.entity.LeadLog;
+import com.royalmade.service.LeadLogService;
+import com.royalmade.service.LeadService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Set;
+
+@RestController
+public class LeadController {
+
+    @Autowired
+    private LeadService leadService;
+
+    @Autowired
+    private LeadLogService leadLogService;
+
+
+    @PostMapping("/createNewLead")
+    public ResponseEntity<Lead> addNewLead(@RequestBody Lead lead) {
+        Lead savedLead = leadService.addNewLead(lead);
+        return ResponseEntity.ok(savedLead);
+    }
+
+
+
+    @PostMapping("/{id}/addLogs")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Lead> addLogsToLead(@PathVariable Long id, @RequestBody List<LeadLog> leadLogs) {
+        Lead updatedLead = leadService.addLogsToLead(id, leadLogs);
+        return ResponseEntity.ok(updatedLead);
+    }
+
+    @GetMapping("/getlead/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Lead> getLeadById(@PathVariable Long id) {
+        Lead lead = leadService.getLeadById(id); // Fetch the lead with logs
+        return ResponseEntity.ok(lead);
+    }
+
+    @GetMapping("/getAllLeads")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<List<Lead>> getAllLeads() {
+        List<Lead> leads = leadService.getAllLeads();
+        return ResponseEntity.ok(leads);
+    }
+    @DeleteMapping("/deleteLead/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<String> deleteLead(@PathVariable Long id) {
+        boolean isDeleted = leadService.deleteLead(id);
+        if (isDeleted) {
+            return ResponseEntity.ok("Lead deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Lead not found.");
+        }
+    }
+
+        @PutMapping("/updateLead/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Lead> updateLead(@PathVariable Long id, @RequestBody Lead lead) {
+        Lead updatedLead = leadService.updateLead(id, lead);
+        return ResponseEntity.ok(updatedLead);
+    }
+
+
+
+
+}
+
+
+
+
