@@ -1,6 +1,7 @@
 package com.royalmade.service;
 
 import com.royalmade.dto.CustomerDto;
+import com.royalmade.dto.LoanDto;
 import com.royalmade.entity.Customer;
 import com.royalmade.repo.BookingRepository;
 import com.royalmade.repo.CustomerRepository;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -24,8 +26,13 @@ public class CustomerService {
         customer.setPhoneNumber(customerDto.getPhoneNumber());
         customer.setEmail(customerDto.getEmail());
         customer.setAadharNumber(customerDto.getAadharNumber());
+        customer.setAddress(customerDto.getAddress());
+        customer.setPanCard(customerDto.getPanCard());
         customer.setAgentName(customerDto.getAgentName());
         customer.setBrokerage(customerDto.getBrokerage());
+        customer.setLoan(customerDto.getLoan());
+        customer.setBankName(customerDto.getBankName());
+        customer.setLoanAmount(customerDto.getLoanAmount());
 
         // Save the customer entity
         return customerRepository.save(customer);
@@ -55,7 +62,7 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
-    @Transactional
+    //@Transactional
     public Customer updateCustomerById(Long id, CustomerDto customerDto) {
         // Fetch the existing customer by ID
         Customer existingCustomer = customerRepository.findById(id)
@@ -66,10 +73,35 @@ public class CustomerService {
         existingCustomer.setPhoneNumber(customerDto.getPhoneNumber());
         existingCustomer.setEmail(customerDto.getEmail());
         existingCustomer.setAadharNumber(customerDto.getAadharNumber());
+        existingCustomer.setAddress(customerDto.getAddress());
+        existingCustomer.setPanCard(customerDto.getPanCard());
         existingCustomer.setAgentName(customerDto.getAgentName());
         existingCustomer.setBrokerage(customerDto.getBrokerage());
+        existingCustomer.setLoan(customerDto.getLoan());
+        existingCustomer.setBankName(customerDto.getBankName());
+        existingCustomer.setLoanAmount(customerDto.getLoanAmount());
 
         // Save the updated customer
         return customerRepository.save(existingCustomer);
+    }
+
+    public Customer addBankDetails(Long id, LoanDto loanDto) {
+        // Find customer by ID
+        Optional<Customer> customerOptional = customerRepository.findById(id);
+
+        if (customerOptional.isPresent()) {
+            Customer customer = customerOptional.get();
+
+            // Update customer details from LoanDto
+            customer.setBankName(loanDto.getBankName());
+            customer.setLoanAmount(loanDto.getLoanAmount());
+
+            // Save the updated customer back to the database
+            return customerRepository.save(customer);
+
+        } else {
+            throw new RuntimeException("Customer not found with id: " + id);
+        }
+
     }
 }

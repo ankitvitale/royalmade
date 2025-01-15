@@ -6,6 +6,9 @@ import com.royalmade.entity.enumeration.ExpenseType;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -41,12 +44,25 @@ public class Expense implements Serializable {
     @Column(name = "price")
     private Double price;
 
+    @Column(name = "total_price")
+    private Double totalPrice;
+
+    @Column(name = "vendorAmountPaid")
+    private Double vendorAmountPaid;
+    @Column(name = "reamingAmount")
+    private Double reamingAmount;
+
     @Column(name = "added_on")
     private LocalDate addedOn;
-
+    @Column(name = "billImg")
+    private String billImg;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "expense")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "expense" }, allowSetters = true)
-    @OneToOne
-    @JoinColumn(unique = true)
+    private List<ExpenseInstallment> expenseInstallments = new ArrayList<>();
+    @JsonIgnoreProperties(value = { "expense" }, allowSetters = true)
+    @ManyToOne
+  //  @JoinColumn(unique = true)
     private AppUser addedBy;
 
     @ManyToOne
@@ -133,6 +149,38 @@ public class Expense implements Serializable {
         this.price = price;
     }
 
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Double getVendorAmountPaid() {
+        return vendorAmountPaid;
+    }
+
+    public void setVendorAmountPaid(Double vendorAmountPaid) {
+        this.vendorAmountPaid = vendorAmountPaid;
+    }
+
+    public Double getReamingAmount() {
+        return reamingAmount;
+    }
+
+    public void setReamingAmount(Double reamingAmount) {
+        this.reamingAmount = reamingAmount;
+    }
+
+    public List<ExpenseInstallment> getExpenseInstallments() {
+        return expenseInstallments;
+    }
+
+    public void setExpenseInstallments(List<ExpenseInstallment> expenseInstallments) {
+        this.expenseInstallments = expenseInstallments;
+    }
+
     public LocalDate getAddedOn() {
         return this.addedOn;
     }
@@ -144,6 +192,15 @@ public class Expense implements Serializable {
 
     public void setAddedOn(LocalDate addedOn) {
         this.addedOn = addedOn;
+    }
+
+
+    public String getBillImg() {
+        return billImg;
+    }
+
+    public void setBillImg(String billImg) {
+        this.billImg = billImg;
     }
 
     public AppUser getAddedBy() {

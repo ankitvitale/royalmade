@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,6 +83,8 @@ public class LeadService {
         lead.setEmail(updatedLead.getEmail());
         lead.setPhoneNumber(updatedLead.getPhoneNumber());
         lead.setFoundOn(updatedLead.getFoundOn());
+        lead.setRemark(updatedLead.getRemark());
+        lead.setRemarkdate(updatedLead.getRemarkdate());
         lead.setStatus(updatedLead.getStatus());
 
         // Update the lead logs if provided
@@ -105,5 +108,15 @@ public class LeadService {
         return lead;  // Return the updated lead
     }
 
-
+    public Lead addRemark(Long id, String remark, LocalDate remarkDate) {
+        Optional<Lead> optionalLead = leadRepository.findById(id);
+        if (optionalLead.isPresent()) {
+            Lead lead = optionalLead.get();
+            lead.setRemark(remark);
+            lead.setRemarkdate(remarkDate); // Set the remark date
+            return leadRepository.save(lead);
+        } else {
+            throw new RuntimeException("Lead not found with id: " + id);
+        }
+    }
 }

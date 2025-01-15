@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.royalmade.entity.enumeration.UserType;
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.Cache;
@@ -42,9 +44,13 @@ public class AppUser implements Serializable {
     @Column(name = "user_type")
     private UserType userType;
 
+    @OneToMany(mappedBy = "addedBy", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = { "addedBy", "project" }, allowSetters = true)
-    @OneToOne( mappedBy = "addedBy")
-    private Expense expense;
+    private List<Expense> expenses = new ArrayList<>();
+
+    @OneToMany
+    @JsonIgnoreProperties(value = { "appUser", "expenses", "residencies", "land" }, allowSetters = true)
+    private List<Project> allowedSite=new ArrayList<>();
 
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -146,24 +152,22 @@ public class AppUser implements Serializable {
         this.userType = userType;
     }
 
-    public Expense getExpense() {
-        return this.expense;
+    public List<Project> getAllowedSite() {
+        return allowedSite;
     }
 
-    public void setExpense(Expense expense) {
-        if (this.expense != null) {
-            this.expense.setAddedBy(null);
-        }
-        if (expense != null) {
-            expense.setAddedBy(this);
-        }
-        this.expense = expense;
+    public void setAllowedSite(List<Project> allowedSite) {
+        this.allowedSite = allowedSite;
     }
 
-    public AppUser expense(Expense expense) {
-        this.setExpense(expense);
-        return this;
+    public List<Expense> getExpenses() {
+        return expenses;
     }
+
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
+    }
+
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
@@ -196,4 +200,6 @@ public class AppUser implements Serializable {
             ", userType='" + getUserType() + "'" +
             "}";
     }
+
+
 }

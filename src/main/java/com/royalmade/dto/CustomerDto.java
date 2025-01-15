@@ -9,8 +9,17 @@ public class CustomerDto {
     private String phoneNumber;
     private String email;
     private String aadharNumber;
+    private String address;
+    private String panCard;
+
     private String agentName;
     private String brokerage;
+    private String loan;
+    private String bankName;
+
+    private String loanAmount;
+
+
 
     public Long getId() {
         return id;
@@ -52,6 +61,22 @@ public class CustomerDto {
         this.aadharNumber = aadharNumber;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPanCard() {
+        return panCard;
+    }
+
+    public void setPanCard(String panCard) {
+        this.panCard = panCard;
+    }
+
     public String getAgentName() {
         return agentName;
     }
@@ -66,5 +91,29 @@ public class CustomerDto {
 
     public void setBrokerage(String brokerage) {
         this.brokerage = brokerage;
+    }
+
+    public String getLoan() {
+        return loan;
+    }
+
+    public void setLoan(String loan) {
+        this.loan = loan;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getLoanAmount() {
+        return loanAmount;
+    }
+
+    public void setLoanAmount(String loanAmount) {
+        this.loanAmount = loanAmount;
     }
 }

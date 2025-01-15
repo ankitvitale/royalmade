@@ -2,8 +2,10 @@ package com.royalmade.service;
 
 import com.royalmade.dto.*;
 import com.royalmade.entity.*;
+import com.royalmade.entity.enumeration.UserType;
 import com.royalmade.exception.ResourceNotFoundException;
 import com.royalmade.mapper.ProjectMapper;
+import com.royalmade.repo.AppUserRepository;
 import com.royalmade.repo.LandRepository;
 import com.royalmade.repo.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +26,9 @@ public class ProjectService {
     @Autowired
     private ProjectMapper projectMapper;
 
+    @Autowired
+    private AppUserRepository appUserRepository;
+
 
     public Project createProject(ProjectRequestDto projectRequestDto) {
         // Create a new Project entity
@@ -39,9 +44,17 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
+//    public List<ProjectResponseDto> getAllProjects() {
+//        List<Project> projects = projectRepository.findAll();
+//        // Map entities to DTOs
+//        return projects.stream()
+//                .map(projectMapper::toProjectResponseDto)
+//                .collect(Collectors.toList());
+//    }
+
+
     public List<ProjectResponseDto> getAllProjects() {
         List<Project> projects = projectRepository.findAll();
-        // Map entities to DTOs
         return projects.stream()
                 .map(projectMapper::toProjectResponseDto)
                 .collect(Collectors.toList());
@@ -71,5 +84,39 @@ public class ProjectService {
 
         return updatedProject;
     }
+    public void deleteProject(Long id) {
+        // Fetch the existing Project entity by ID
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + id));
+
+        // Delete the Project
+        projectRepository.delete(project);
+    }
+
+    public Project allowedSiteSupervisor(Long userId, Long projectId) {
+        // Fetch the supervisor (AppUser) details
+        AppUser supervisor = appUserRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Supervisor with ID " + userId + " not found"));
+
+        // Validate the supervisor's role
+        if (!supervisor.getUserType().equals(UserType.AppUser)) {
+            throw new IllegalArgumentException("User with ID " + userId + " is not a valid site supervisor");
+        }
+
+        // Fetch the project
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project with ID " + projectId + " not found"));
+
+        // Associate the supervisor with the project
+        project.setAppUser(supervisor); // Assuming `setAppUser` links the supervisor to the project
+
+        // Optionally, add the project to the supervisor's list of allowed sites
+        supervisor.getAllowedSite().add(project);
+        appUserRepository.save(supervisor);
+
+        // Save and return the updated project
+        return projectRepository.save(project);
+    }
+
 
 }

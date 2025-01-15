@@ -2,17 +2,22 @@ package com.royalmade.service;
 
 
 
+import com.royalmade.dto.ExpenceProjectDto;
 import com.royalmade.entity.*;
 import com.royalmade.entity.enumeration.UserType;
 import com.royalmade.repo.*;
 import com.royalmade.security.JwtHelper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -41,6 +46,11 @@ public class UserService {
 		 @Autowired
 		 private AppUserRepository appUserRepository;
 
+		 @Autowired
+		 private ProjectRepository projectRepository;
+
+	@Autowired
+	private ModelMapper modelMapper; // To map entities to DTOs
 	    public void initRoleAndUser() {
 			// Create roles
 			if (!roleDao.existsById("Admin")) {
@@ -126,5 +136,31 @@ public class UserService {
 			appUserRepository.findById(id);
 			return "This Supervisor not found plase register new Supervisor....!";
 
+	}
+
+
+	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
+	}
+
+	public List<ExpenceProjectDto> getAllProjects() {
+		// Retrieve all projects from the repository
+		List<Project> projects = projectRepository.findAll();
+
+		// Map the entity list to a list of DTOs
+		return projects.stream()
+				.map(project -> modelMapper.map(project, ExpenceProjectDto.class))
+				.collect(Collectors.toList());
+	}
+
+
+	public List<ExpenceProjectDto> getAllowedSitesForUser(String email) {
+		AppUser user = appUserRepository.findByEmail(email);
+
+		// Map the allowed sites to DTOs
+		return user.getAllowedSite().stream()
+				.map(site -> modelMapper.map(site, ExpenceProjectDto.class))
+				.collect(Collectors.toList());
 	}
 }

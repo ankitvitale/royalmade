@@ -27,15 +27,22 @@ public class RelievingLatterService {
     }
 
     public RelievingLatter updateRelievingLatter(RelievingLatter relievingLatter) {
-        RelievingLatter relievingLatter1=relievingLatterRepository.findById(relievingLatter.getId()).orElseThrow(()-> new RuntimeException("ID is not found "+relievingLatter.getId()));
-        relievingLatter.setEmployeeName(relievingLatter1.getEmployeeName());
-        relievingLatter.setCurrentDate(relievingLatter1.getCurrentDate());
-        relievingLatter.setResignationDate(relievingLatter1.getResignationDate());
-        relievingLatter.setLastworkingdate(relievingLatter1.getLastworkingdate());
-        relievingLatter.setDesignation(relievingLatter1.getDesignation());
-        relievingLatter.setDeparment(relievingLatter1.getDeparment());
-        relievingLatter.setLocation(relievingLatter1.getLocation());
-        return relievingLatterRepository.save(relievingLatter);
+        RelievingLatter existingRelievingLatter = relievingLatterRepository.findById(relievingLatter.getId())
+                .orElseThrow(() -> new RuntimeException("ID not found: " + relievingLatter.getId()));
+
+        // Update fields of the existing entity
+        existingRelievingLatter.setEmpId(relievingLatter.getEmpId());
+        existingRelievingLatter.setEmployeeName(relievingLatter.getEmployeeName());
+        existingRelievingLatter.setCurrentDate(relievingLatter.getCurrentDate());
+        existingRelievingLatter.setResignationDate(relievingLatter.getResignationDate());
+        existingRelievingLatter.setDateOfjoing(relievingLatter.getDateOfjoing());
+        existingRelievingLatter.setLastworkingdate(relievingLatter.getLastworkingdate()); // Fix: Update lastworkingdate
+        existingRelievingLatter.setDesignation(relievingLatter.getDesignation());
+        existingRelievingLatter.setDepartment(relievingLatter.getDepartment());
+        existingRelievingLatter.setLocation(relievingLatter.getLocation());
+
+        // Save and return the updated entity
+        return relievingLatterRepository.save(existingRelievingLatter);
     }
 
     public void deleteRelievingLatter(Long id) {

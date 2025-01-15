@@ -9,11 +9,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = { LandMapper.class })
 public abstract class ProjectMapper {
 
-    public abstract ProjectResponseDto toProjectResponseDto(Project project);
 
+
+
+ // public abstract ProjectResponseDto toProjectResponseDto(Project project);
     public abstract Project toProject(ProjectRequestDto projectRequestDto);
 
-//    public abstract  ProjectRequestDto toProjectRequestDto(Project project);
+  public  abstract ProjectResponseDto toProjectResponseDto(Project project);
 
 
 

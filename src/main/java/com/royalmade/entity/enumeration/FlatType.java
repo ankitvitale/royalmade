@@ -5,4 +5,6 @@ public enum FlatType {
     TWO_BHK,
     THREE_BHK,
     ONE_RK,
+    FOUR_BHK,
+    FIVE_BHK
 }

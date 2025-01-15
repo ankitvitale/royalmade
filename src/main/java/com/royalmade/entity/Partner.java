@@ -3,6 +3,8 @@ package com.royalmade.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -25,14 +27,16 @@ public class Partner implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "email")
-    private String email;
+    @Column(name = "city")
+    private String city;
 
     @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "amount")
     private String amount;
+    @Column(name = "partner_payment_date")
+    private LocalDate paymentDate;
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "address", "owner", "purchaser", "partners", "project" }, allowSetters = true)
@@ -66,17 +70,17 @@ public class Partner implements Serializable {
         this.name = name;
     }
 
-    public String getEmail() {
-        return this.email;
+    public String getCity() {
+        return this.city;
     }
 
-    public Partner email(String email) {
-        this.setEmail(email);
+    public Partner city(String city) {
+        this.setCity(city);
         return this;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getPhoneNumber() {
@@ -103,6 +107,14 @@ public class Partner implements Serializable {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public LocalDate getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(LocalDate paymentDate) {
+        this.paymentDate = paymentDate;
     }
 
     public Land getLand() {
@@ -143,7 +155,7 @@ public class Partner implements Serializable {
         return "Partner{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", email='" + getEmail() + "'" +
+            ", city='" + getCity() + "'" +
             ", phoneNumber='" + getPhoneNumber() + "'" +
             ", amount='" + getAmount() + "'" +
             "}";

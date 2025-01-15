@@ -1,9 +1,11 @@
 package com.royalmade.service;
 
+import com.royalmade.dto.ProjectDto;
 import com.royalmade.dto.ResidencyDto;
-import com.royalmade.entity.Land;
 import com.royalmade.entity.Project;
 import com.royalmade.entity.Residency;
+import com.royalmade.entity.enumeration.AvailabilityStatus;
+import com.royalmade.exception.ResourceNotFoundException;
 import com.royalmade.mapper.ResidencyMapper;
 import com.royalmade.repo.ProjectRepository;
 import com.royalmade.repo.ResidencyRepository;
@@ -11,7 +13,11 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ResidencyService {
@@ -60,6 +66,7 @@ public class ResidencyService {
         return residencyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Residency not found with ID: " + id));
     }
+
     // Update an existing residency
     public Residency updateResidency(Long id, ResidencyDto residencyDto) {
         // Fetch the existing residency entity
@@ -85,4 +92,61 @@ public class ResidencyService {
         // Save and return the updated residency
         return residencyRepository.save(existingResidency);
     }
+
+    public List<ResidencyDto> getResidenciesByProjectId(Long projectId) {
+        List<Residency> residencies = residencyRepository.findAllByProjectId(projectId);
+
+
+        // Map Residency entities to DTOs
+        return residencies.stream().map(residency -> {
+            ResidencyDto dto = new ResidencyDto();
+            dto.setId(residency.getId());
+            dto.setName(residency.getName());
+            dto.setResidencyType(residency.getResidencyType());
+            dto.setFlatType(residency.getFlatType());
+            dto.setAvailabilityStatus(residency.getAvailabilityStatus());
+            dto.setFloorNumber(residency.getFloorNumber());
+            dto.setIdentifier(residency.getIdentifier());
+            dto.setPrice(residency.getPrice());
+            dto.setProjectId(residency.getProject().getId());
+            return dto;
+        }).toList();
+    }
+
+
+
+
+    public Map<Long, Map<String, Long>> countResidenciesByProjectAndStatus() {
+        List<Object[]> results = residencyRepository.countByProjectIdAndAvailabilityStatus();
+
+        // Map to store the results by projectId and availability status
+        Map<Long, Map<String, Long>> projectStatusCountMap = new HashMap<>();
+
+        // Iterate over the query results and populate the map
+        for (Object[] result : results) {
+            Long projectId = (Long) result[0];
+            AvailabilityStatus availabilityStatus = (AvailabilityStatus) result[1];
+            Long count = (Long) result[2];
+
+            // Get or create the map for the given projectId
+            projectStatusCountMap
+                    .computeIfAbsent(projectId, k -> new HashMap<>())
+                    .put(availabilityStatus.name(), count);
+        }
+
+        return projectStatusCountMap;
+    }
+
+    public Residency deleteResidency(Long id) {
+        Residency residency=residencyRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Residency ID Not Found"));
+        residencyRepository.deleteById(id);
+        return residency;
+    }
+
+    public List<Residency> getResidenciesByProject(Long projectId) {
+//
+        return residencyRepository.findByProjectIdAndAvailabilityStatus(projectId, AvailabilityStatus.BOOKED);
+
+    }
+
 }

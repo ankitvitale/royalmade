@@ -4,7 +4,7 @@ import com.royalmade.entity.Land;
 import com.royalmade.entity.enumeration.ProjectStatus;
 
 public class ProjectRequestDto {
- private Long id;
+     private Long id;
     private String name;
     private ProjectStatus status;
    private Long landId; // Reference to Land by ID

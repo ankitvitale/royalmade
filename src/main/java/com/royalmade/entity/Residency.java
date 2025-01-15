@@ -224,4 +224,6 @@ public class Residency implements Serializable {
             ", price=" + getPrice() +
             "}";
     }
+
+
 }

@@ -5,11 +5,15 @@ package com.royalmade.controller;
 import com.royalmade.entity.Admin;
 import com.royalmade.entity.JwtRequest;
 import com.royalmade.entity.JwtResponse;
+import com.royalmade.entity.Project;
 import com.royalmade.service.JwtService;
+import com.royalmade.service.ProjectService;
 import com.royalmade.service.UserService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +26,9 @@ public class AdminController {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private ProjectService projectService;
 
 
     @PostConstruct
@@ -39,4 +46,12 @@ public class AdminController {
 
         return jwtService.createJwtToken(jwtRequest);
     }
+
+    @PutMapping("/allowedSiteSupervisor/{userId}/{projectId}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Project> allowedSiteSupervisor(@PathVariable Long userId, @PathVariable Long projectId) {
+        Project allowedProject = projectService.allowedSiteSupervisor(userId, projectId);
+        return ResponseEntity.ok(allowedProject);
+    }
+
 }

@@ -45,7 +45,11 @@ public class Lead implements Serializable {
 
     @Column(name = "found_on")
     private LocalDate foundOn;
+    @Column(name = "remark")
+    private String remark;
 
+    @Column(name = "remark_date")
+    private LocalDate remarkdate;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private LeadStatus status;
@@ -57,7 +61,10 @@ public class Lead implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Lead(){}
-    public Lead(Long id, String name, String jobTitle, String companyName, String email, String phoneNumber, LocalDate foundOn, LeadStatus status, List<LeadLog> leadLogs) {
+
+
+
+    public Lead(Long id, String name, String jobTitle, String companyName, String email, String phoneNumber, LocalDate foundOn, String remark, LocalDate remarkdate, LeadStatus status, List<LeadLog> leadLogs) {
         this.id = id;
         this.name = name;
         this.jobTitle = jobTitle;
@@ -65,6 +72,8 @@ public class Lead implements Serializable {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.foundOn = foundOn;
+        this.remark = remark;
+        this.remarkdate = remarkdate;
         this.status = status;
         this.leadLogs = leadLogs;
     }
@@ -161,6 +170,22 @@ public class Lead implements Serializable {
 
     public void setFoundOn(LocalDate foundOn) {
         this.foundOn = foundOn;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public LocalDate getRemarkdate() {
+        return remarkdate;
+    }
+
+    public void setRemarkdate(LocalDate remarkdate) {
+        this.remarkdate = remarkdate;
     }
 
     public LeadStatus getStatus() {

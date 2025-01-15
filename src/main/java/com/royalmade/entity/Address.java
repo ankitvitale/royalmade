@@ -37,6 +37,17 @@ public class Address implements Serializable {
     @Column(name = "country")
     private String country;
 
+    @Column(name = "muza")
+    private String muza;
+    @Column(name = "khno")
+    private String khno;
+    @Column(name = "ph_no")
+    private String phno;
+    @Column(name = "plot_no")
+    private String plotno;
+
+
+
     @JsonIgnoreProperties(value = { "address", "owner", "purchaser", "partners", "project" }, allowSetters = true)
     @OneToOne(mappedBy = "address")
     private Land land;
@@ -119,6 +130,38 @@ public class Address implements Serializable {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getMuza() {
+        return muza;
+    }
+
+    public void setMuza(String muza) {
+        this.muza = muza;
+    }
+
+    public String getKhno() {
+        return khno;
+    }
+
+    public void setKhno(String khno) {
+        this.khno = khno;
+    }
+
+    public String getPhno() {
+        return phno;
+    }
+
+    public void setPhno(String phno) {
+        this.phno = phno;
+    }
+
+    public String getPlotno() {
+        return plotno;
+    }
+
+    public void setPlotno(String plotno) {
+        this.plotno = plotno;
     }
 
     public Land getLand() {

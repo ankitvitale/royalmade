@@ -2,6 +2,7 @@ package com.royalmade.controller;
 
 import com.royalmade.dto.LeadRequestDto;
 import com.royalmade.dto.LeadResponseDto;
+import com.royalmade.dto.RemarkRequest;
 import com.royalmade.entity.Lead;
 import com.royalmade.entity.LeadLog;
 import com.royalmade.service.LeadLogService;
@@ -49,7 +50,7 @@ public class LeadController {
     }
 
     @GetMapping("/getAllLeads")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Employee')")
     public ResponseEntity<List<Lead>> getAllLeads() {
         List<Lead> leads = leadService.getAllLeads();
         return ResponseEntity.ok(leads);
@@ -65,14 +66,19 @@ public class LeadController {
         }
     }
 
-        @PutMapping("/updateLead/{id}")
+    @PutMapping("/updateLead/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Lead> updateLead(@PathVariable Long id, @RequestBody Lead lead) {
         Lead updatedLead = leadService.updateLead(id, lead);
         return ResponseEntity.ok(updatedLead);
     }
 
-
+    @PostMapping("/remark/{id}/remark")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Lead> addRemark(@PathVariable Long id, @RequestBody RemarkRequest remarkRequest) {
+        Lead updatedLead = leadService.addRemark(id, remarkRequest.getRemark(), remarkRequest.getRemarkdate());
+        return ResponseEntity.ok(updatedLead);
+    }
 
 
 }

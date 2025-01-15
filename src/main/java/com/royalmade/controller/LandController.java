@@ -1,10 +1,8 @@
 package com.royalmade.controller;
 
-import com.royalmade.dto.LandDto;
-import com.royalmade.dto.LandInfoDto;
-import com.royalmade.dto.LandRequestDto;
-import com.royalmade.dto.LandResponseDto;
+import com.royalmade.dto.*;
 import com.royalmade.entity.Land;
+import com.royalmade.entity.Partner;
 import com.royalmade.mapper.LandMapper;
 import com.royalmade.service.LandService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,12 @@ public class LandController {
         Land createdLand = landService.createLand(landRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLand);
     }
+    @PostMapping("/partnerpayment/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Partner> addPartnerPayment(@RequestBody PartnerpaymnetDto partnerpaymnetDto,@PathVariable Long  id){
+        Partner addpayment = landService.addPartnerPayment(partnerpaymnetDto,id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addpayment);
+    }
     @GetMapping("/getAllland")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<List<Land>> getAllLands() {
@@ -44,13 +48,7 @@ public class LandController {
         return ResponseEntity.ok(lands);
     }
 
-//    @GetMapping("/land/{id}")
-//    @PreAuthorize("hasRole('Admin')")
-//    public ResponseEntity<LandDto> getLandById(@PathVariable Long id) {
-//        Land land = landService.getLandById(id);
-//        LandDto responseDto = landMapper.toLandDto(land); // Map to DTO
-//        return ResponseEntity.ok(responseDto);
-//    }
+
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Land> updateLand(@PathVariable Long id, @RequestBody LandRequestDto landRequestDto) {

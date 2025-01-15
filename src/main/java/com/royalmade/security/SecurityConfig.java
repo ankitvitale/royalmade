@@ -45,7 +45,7 @@ public class SecurityConfig {
             "/createOfferLatter","/getOfferlatter","/singleOfferlatter/{id}","/updateOfferlatter/{id}","/deleteOfferlatter/{id}",
             "/createRelievinglatter","/getAllRelievingLatter","/getAllRelievingLatterbyid/{id}","/updateRelievingLatter/{id}","/deleteRelievingLatter/{id}"
             ,"/createBooking","/bookings","/addCustomer","/getAllcustomer","/getAllcustomer/{id}","/customerdelete/{id}","/customerupdate/{id}","/expenses/by-vendor","/updateExpense/{expenceId}"
-            ,"/updateProject/{id}"
+            ,"/updateProject/{id}","/Allexpenses","/count"
     };
 
 

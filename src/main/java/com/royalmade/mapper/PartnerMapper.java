@@ -8,6 +8,5 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public abstract class PartnerMapper {
 
-
     public abstract PartnerDto toPartnerDto(Partner partner);
 }

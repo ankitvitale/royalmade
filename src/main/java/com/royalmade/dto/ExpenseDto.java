@@ -2,6 +2,7 @@ package com.royalmade.dto;
 
 import com.royalmade.entity.AppUser;
 import com.royalmade.entity.enumeration.ExpenseType;
+import jakarta.persistence.Column;
 
 import java.time.LocalDate;
 
@@ -12,7 +13,11 @@ public class ExpenseDto {
     private Integer quantity;
     private String vendorName;
     private Double price;
+    private Double totalprice;
+    private Double vendorAmountPaid;
+    private Double reamingAmount;
     private LocalDate addedOn;
+    private String billImg;
     private AddedByDto addedByDto;
     private ProjectDto project;
 
@@ -68,12 +73,44 @@ public class ExpenseDto {
         this.price = price;
     }
 
+    public Double getTotalprice() {
+        return totalprice;
+    }
+
+    public void setTotalprice(Double totalprice) {
+        this.totalprice = totalprice;
+    }
+
+    public Double getVendorAmountPaid() {
+        return vendorAmountPaid;
+    }
+
+    public void setVendorAmountPaid(Double vendorAmountPaid) {
+        this.vendorAmountPaid = vendorAmountPaid;
+    }
+
+    public Double getReamingAmount() {
+        return reamingAmount;
+    }
+
+    public void setReamingAmount(Double reamingAmount) {
+        this.reamingAmount = reamingAmount;
+    }
+
     public LocalDate getAddedOn() {
         return addedOn;
     }
 
     public void setAddedOn(LocalDate addedOn) {
         this.addedOn = addedOn;
+    }
+
+    public String getBillImg() {
+        return billImg;
+    }
+
+    public void setBillImg(String billImg) {
+        this.billImg = billImg;
     }
 
     public AddedByDto getAddedByDto() {

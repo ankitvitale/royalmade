@@ -47,6 +47,10 @@ public class Project implements Serializable {
     @JsonIgnoreProperties(value = { "booking", "project" }, allowSetters = true)
     private Set<Residency> residencies = new HashSet<>();
 
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "password", "email", "allowedSite", "expenses", "role" }, allowSetters = true)
+    private AppUser appUser;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -163,7 +167,14 @@ public class Project implements Serializable {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    public AppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
+    }
+// jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {

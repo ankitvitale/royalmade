@@ -4,7 +4,7 @@ import jakarta.persistence.Column;
 
 public class PartnerDto {
     private String name;
-    private String email;
+    private String city;
     private String phoneNumber;
     private String amount;
 
@@ -16,12 +16,12 @@ public class PartnerDto {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getCity() {
+        return city;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getPhoneNumber() {

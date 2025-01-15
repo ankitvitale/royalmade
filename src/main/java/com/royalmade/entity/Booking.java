@@ -6,6 +6,9 @@ import com.royalmade.entity.enumeration.BookingStatus;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -55,6 +58,13 @@ public class Booking implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "booking_status")
     private BookingStatus bookingStatus;
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "booking")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "booking" }, allowSetters = true)
+    private List<BookingInstallment> bookingInstallments = new ArrayList<>();
+
 
     @JsonIgnoreProperties(value = { "booking" }, allowSetters = true)
     @OneToOne
@@ -208,6 +218,14 @@ public class Booking implements Serializable {
 
     public void setBookingStatus(BookingStatus bookingStatus) {
         this.bookingStatus = bookingStatus;
+    }
+
+    public List<BookingInstallment> getBookingInstallments() {
+        return bookingInstallments;
+    }
+
+    public void setBookingInstallments(List<BookingInstallment> bookingInstallments) {
+        this.bookingInstallments = bookingInstallments;
     }
 
     public Customer getCustomer() {

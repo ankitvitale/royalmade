@@ -1,8 +1,7 @@
 package com.royalmade.service;
 
-import com.royalmade.dto.LandInfoDto;
 import com.royalmade.dto.LandRequestDto;
-import com.royalmade.dto.LandResponseDto;
+import com.royalmade.dto.PartnerpaymnetDto;
 import com.royalmade.entity.Address;
 import com.royalmade.entity.Land;
 import com.royalmade.entity.Partner;
@@ -13,15 +12,11 @@ import com.royalmade.repo.AddressRepository;
 import com.royalmade.repo.LandRepository;
 import com.royalmade.repo.PartnerRepository;
 import com.royalmade.repo.PersonRepository;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class LandService {
@@ -90,6 +85,10 @@ public class LandService {
                 existingAddress.setCity(updatedAddress.getCity() != null ? updatedAddress.getCity() : existingAddress.getCity());
                 existingAddress.setState(updatedAddress.getState() != null ? updatedAddress.getState() : existingAddress.getState());
                 existingAddress.setCountry(updatedAddress.getCountry() != null ? updatedAddress.getCountry() : existingAddress.getCountry());
+                existingAddress.setMuza(updatedAddress.getMuza() != null ? updatedAddress.getMuza() : existingAddress.getMuza());
+                existingAddress.setKhno(updatedAddress.getKhno() != null ? updatedAddress.getKhno() : existingAddress.getKhno());
+                existingAddress.setPhno(updatedAddress.getPhno() !=null ? updatedAddress.getPhno(): existingAddress.getPhno());
+                existingAddress.setPlotno(updatedAddress.getPlotno()!=null ? updatedAddress.getPlotno():existingAddress.getPlotno());
                 addressRepository.save(existingAddress);
                 existingLand.setAddress(existingAddress); // Associate with the updated address
             } else {
@@ -98,12 +97,12 @@ public class LandService {
                 existingLand.setAddress(updatedAddress);
             }
         }
-// Update Purchaser
+       // Update Purchaser
         Person updatedPurchaser = landRequestDto.getPurchaser();
         if (updatedPurchaser != null) {
             updatedPurchaser.setId(existingLand.getPurchaser().getId()); // Retain existing ID
             updatedPurchaser.setName(updatedPurchaser.getName() != null ? updatedPurchaser.getName() : existingLand.getPurchaser().getName());
-            updatedPurchaser.setEmail(updatedPurchaser.getEmail() != null ? updatedPurchaser.getEmail() : existingLand.getPurchaser().getEmail());
+            updatedPurchaser.setAddress(updatedPurchaser.getAddress() != null ? updatedPurchaser.getAddress() : existingLand.getPurchaser().getAddress());
             updatedPurchaser.setPhoneNumber(updatedPurchaser.getPhoneNumber() != null ? updatedPurchaser.getPhoneNumber() : existingLand.getPurchaser().getPhoneNumber());
             personRepository.save(updatedPurchaser);  // You can use merge() instead of save() if it's detached
             existingLand.setPurchaser(updatedPurchaser);
@@ -114,7 +113,7 @@ public class LandService {
         if (updatedOwner != null) {
             updatedOwner.setId(existingLand.getOwner().getId()); // Retain existing ID
             updatedOwner.setName(updatedOwner.getName() != null ? updatedOwner.getName() : existingLand.getOwner().getName());
-            updatedOwner.setEmail(updatedOwner.getEmail() != null ? updatedOwner.getEmail() : existingLand.getOwner().getEmail());
+            updatedOwner.setAddress(updatedOwner.getAddress() != null ? updatedOwner.getAddress() : existingLand.getOwner().getAddress());
             updatedOwner.setPhoneNumber(updatedOwner.getPhoneNumber() != null ? updatedOwner.getPhoneNumber() : existingLand.getOwner().getPhoneNumber());
             personRepository.save(updatedOwner);  // Use merge() instead of save() if necessary
             existingLand.setOwner(updatedOwner);
@@ -135,9 +134,10 @@ public class LandService {
                     Partner existingPartner = partnerRepository.findById(partner.getId())
                             .orElseThrow(() -> new ResourceNotFoundException("Partner not found with ID: " + partner.getId()));
                     existingPartner.setName(partner.getName() != null ? partner.getName() : existingPartner.getName());
-                    existingPartner.setEmail(partner.getEmail() != null ? partner.getEmail() : existingPartner.getEmail());
+                    existingPartner.setCity(partner.getCity() != null ? partner.getCity() : existingPartner.getCity());
                     existingPartner.setPhoneNumber(partner.getPhoneNumber() != null ? partner.getPhoneNumber() : existingPartner.getPhoneNumber());
                     existingPartner.setAmount(partner.getAmount() != null ? partner.getAmount() : existingPartner.getAmount());
+                    existingPartner.setPaymentDate(partner.getPaymentDate()!= null ? partner.getPaymentDate() : existingPartner.getPaymentDate());
                     partnerRepository.save(existingPartner);
                 }
             });
@@ -177,4 +177,15 @@ public class LandService {
         landRepository.delete(existingLand);
     }
 
+    public Partner addPartnerPayment(PartnerpaymnetDto partnerpaymnetDto,  Long id ){
+        Land land=landRepository.findById(id).orElseThrow(()-> new RuntimeException("land "+id+"not found"));
+        Partner partner =new Partner();
+        partner.setName(partnerpaymnetDto.getName());
+        partner.setCity(partnerpaymnetDto.getCity());
+        partner.setPhoneNumber(partnerpaymnetDto.getPhoneNumber());
+        partner.setAmount(partnerpaymnetDto.getAmount());
+        partner.setPaymentDate(partnerpaymnetDto.getPaymentDate());
+        partner.setLand(land);
+        return partnerRepository.save(partner);
+    }
 }

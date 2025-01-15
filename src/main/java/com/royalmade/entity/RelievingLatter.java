@@ -9,14 +9,16 @@ public class RelievingLatter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private Long empId;
     private String employeeName;
     @Column(name = "creation_date")
     private LocalDate currentDate;
     private LocalDate resignationDate;
+
+    private LocalDate dateOfjoing;
     private LocalDate lastworkingdate;
     private String designation;
-    private String deparment;
+    private String department;
     private String location;
 
     public Long getId() {
@@ -67,12 +69,13 @@ public class RelievingLatter {
         this.designation = designation;
     }
 
-    public String getDeparment() {
-        return deparment;
+
+    public String getDepartment() {
+        return department;
     }
 
-    public void setDeparment(String deparment) {
-        this.deparment = deparment;
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public String getLocation() {
@@ -81,5 +84,21 @@ public class RelievingLatter {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Long getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(Long empId) {
+        this.empId = empId;
+    }
+
+    public LocalDate getDateOfjoing() {
+        return dateOfjoing;
+    }
+
+    public void setDateOfjoing(LocalDate dateOfjoing) {
+        this.dateOfjoing = dateOfjoing;
     }
 }

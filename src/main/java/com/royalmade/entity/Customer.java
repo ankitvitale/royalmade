@@ -34,11 +34,23 @@ public class Customer implements Serializable {
     @Column(name = "aadhar_number")
     private String aadharNumber;
 
+    @Column(name = "address")
+    private String address;
+    @Column(name = "pancard")
+    private String panCard;
+
+
     @Column(name = "agent_name")
     private String agentName;
 
     @Column(name = "brokerage")
     private String brokerage;
+    @Column(name = "loan")
+    private String loan;
+    @Column(name = "bankName")
+    private String bankName;
+    @Column(name = "loan_amount")
+    private String loanAmount;
 
     @JsonIgnoreProperties(value = { "customer", "residency" }, allowSetters = true)
     @OneToOne( mappedBy = "customer")
@@ -110,10 +122,26 @@ public class Customer implements Serializable {
     public void setAadharNumber(String aadharNumber) {
         this.aadharNumber = aadharNumber;
     }
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPanCard() {
+        return panCard;
+    }
+
+    public void setPanCard(String panCard) {
+        this.panCard = panCard;
+    }
 
     public String getAgentName() {
         return this.agentName;
     }
+
 
     public Customer agentName(String agentName) {
         this.setAgentName(agentName);
@@ -135,6 +163,30 @@ public class Customer implements Serializable {
 
     public void setBrokerage(String brokerage) {
         this.brokerage = brokerage;
+    }
+
+    public String getLoan() {
+        return loan;
+    }
+
+    public void setLoan(String loan) {
+        this.loan = loan;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getLoanAmount() {
+        return loanAmount;
+    }
+
+    public void setLoanAmount(String loanAmount) {
+        this.loanAmount = loanAmount;
     }
 
     public Booking getBooking() {

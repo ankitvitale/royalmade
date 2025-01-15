@@ -1,11 +1,14 @@
 package com.royalmade.controller;
 
 import com.royalmade.dto.CustomerDto;
+import com.royalmade.dto.LoanDto;
+import com.royalmade.dto.RemarkRequest;
 import com.royalmade.entity.Customer;
 import com.royalmade.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +45,13 @@ public class CustomerController {
     public ResponseEntity<Customer> updateCustomerById(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
         Customer updatedCustomer = customerService.updateCustomerById(id, customerDto);
         return ResponseEntity.ok(updatedCustomer);
+    }
+
+    @PostMapping("/addLoanDetails/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Customer> addBankDetails(@PathVariable Long id, @RequestBody LoanDto loanDto){
+        Customer customer=customerService.addBankDetails(id,loanDto);
+        return ResponseEntity.ok(customer);
     }
 
 }
