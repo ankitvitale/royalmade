@@ -9,10 +9,12 @@ import com.royalmade.repo.AppUserRepository;
 import com.royalmade.repo.LandRepository;
 import com.royalmade.repo.ProjectRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,13 +86,23 @@ public class ProjectService {
 
         return updatedProject;
     }
+
+
     public void deleteProject(Long id) {
-        // Fetch the existing Project entity by ID
+        // Check if the project exists
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + id));
+        // Delete related entries from residency
+        projectRepository.deleteResidenciesByProjectId(id);
 
-        // Delete the Project
-        projectRepository.delete(project);
+        // Delete related entries from expense_installment
+        projectRepository.deleteExpenseInstallmentsByProjectId(id);
+        projectRepository.deleteExpensesByProjectId(id);
+        // Delete related entries in the app_user_allowed_site table
+        projectRepository.deleteAppUserAllowedSiteByProjectId(id);
+
+        // Delete the project itself
+        projectRepository.deleteProjectById(id);
     }
 
     public Project allowedSiteSupervisor(Long userId, Long projectId) {
@@ -117,6 +129,33 @@ public class ProjectService {
         // Save and return the updated project
         return projectRepository.save(project);
     }
+
+
+    public Project releaseSiteSupervisor(Long userId, Long projectId) {
+        // Fetch the supervisor (AppUser) details
+        AppUser supervisor = appUserRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Supervisor with ID " + userId + " not found"));
+
+        // Fetch the project
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project with ID " + projectId + " not found"));
+
+        // Check if the supervisor is currently assigned to the project
+        if (!project.getAppUser().equals(supervisor)) {
+            throw new IllegalArgumentException("Supervisor with ID " + userId + " is not assigned to this project");
+        }
+
+        // Remove the supervisor from the project
+        project.setAppUser(null); // Assuming `setAppUser` links the supervisor to the project, we set it to null
+
+        // Optionally, remove the project from the supervisor's list of allowed sites
+        supervisor.getAllowedSite().remove(project);
+        appUserRepository.save(supervisor);
+
+        // Save and return the updated project
+        return projectRepository.save(project);
+    }
+
 
 
 }

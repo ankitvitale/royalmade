@@ -1,11 +1,14 @@
 package com.royalmade.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.royalmade.entity.Address;
 import com.royalmade.entity.Partner;
 import com.royalmade.entity.Person;
 
 import java.util.List;
 import java.util.Set;
+
+
 
 
 public class LandRequestDto {
@@ -21,6 +24,10 @@ public class LandRequestDto {
 
 
     private Set<Partner> partners;
+
+    public LandRequestDto() {
+     ;
+    }
 
     public Double getArea() {
         return area;

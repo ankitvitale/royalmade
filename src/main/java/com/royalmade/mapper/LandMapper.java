@@ -22,7 +22,9 @@ public abstract class LandMapper {
 
 
 
-    public abstract Land toLand(LandRequestDto landRequestDto);
+  //  public abstract Land toLand(LandRequestDto landRequestDto);
+  @Mapping(source = "partners", target = "partners")
+  public abstract  Land toLand(LandRequestDto landRequestDto);
 
     @Mapping(target = "soldAmount", expression = "java(" +
             "land.getTotalAmount() + 1000 - (land.getAgreementAmount() + land.getTokenAmount())" +

@@ -10,8 +10,10 @@ import com.royalmade.service.JwtService;
 import com.royalmade.service.ProjectService;
 import com.royalmade.service.UserService;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -53,5 +55,14 @@ public class AdminController {
         Project allowedProject = projectService.allowedSiteSupervisor(userId, projectId);
         return ResponseEntity.ok(allowedProject);
     }
+
+
+    @PutMapping("/releaseSiteSupervisor/{userId}/{projectId}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Project> releaseSiteSupervisor(@PathVariable Long userId, @PathVariable Long projectId) {
+        Project updatedProject = projectService.releaseSiteSupervisor(userId, projectId);
+        return ResponseEntity.ok(updatedProject);
+    }
+
 
 }

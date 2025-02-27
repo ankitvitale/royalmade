@@ -1,10 +1,14 @@
 package com.royalmade.dto;
 
+import com.royalmade.entity.enumeration.InstallmentStatus;
+
+import java.time.LocalDate;
+
 public class BookingInstallmentDTO {
     private Long id;
-    private String installmentDate;
+    private LocalDate installmentDate;
     private Double installmentAmount;
-    private String installmentStatus;
+    private InstallmentStatus installmentStatus;
 
     public Long getId() {
         return id;
@@ -14,11 +18,11 @@ public class BookingInstallmentDTO {
         this.id = id;
     }
 
-    public String getInstallmentDate() {
+    public LocalDate getInstallmentDate() {
         return installmentDate;
     }
 
-    public void setInstallmentDate(String installmentDate) {
+    public void setInstallmentDate(LocalDate installmentDate) {
         this.installmentDate = installmentDate;
     }
 
@@ -30,11 +34,11 @@ public class BookingInstallmentDTO {
         this.installmentAmount = installmentAmount;
     }
 
-    public String getInstallmentStatus() {
+    public InstallmentStatus getInstallmentStatus() {
         return installmentStatus;
     }
 
-    public void setInstallmentStatus(String installmentStatus) {
+    public void setInstallmentStatus(InstallmentStatus installmentStatus) {
         this.installmentStatus = installmentStatus;
     }
 }

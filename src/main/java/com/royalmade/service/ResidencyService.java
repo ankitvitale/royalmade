@@ -69,7 +69,6 @@ public class ResidencyService {
 
     // Update an existing residency
     public Residency updateResidency(Long id, ResidencyDto residencyDto) {
-        // Fetch the existing residency entity
         Residency existingResidency = residencyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Residency not found with ID: " + id));
 

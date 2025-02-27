@@ -21,8 +21,13 @@ public class BookingInstallment {
     @Enumerated(EnumType.STRING)
     @Column(name = "installment_status")
     private InstallmentStatus installmentStatus;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JsonIgnoreProperties(value = { "bookingInstallment" }, allowSetters = true)
+//    private Booking booking;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "bookingInstallment" }, allowSetters = true)
+    @JoinColumn(name = "booking_id")
+    @JsonIgnoreProperties(value = { "bookingInstallments" }, allowSetters = true)
     private Booking booking;
 
     public Long getId() {

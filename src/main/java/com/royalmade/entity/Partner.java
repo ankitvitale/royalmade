@@ -1,9 +1,13 @@
 package com.royalmade.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -41,6 +45,10 @@ public class Partner implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "address", "owner", "purchaser", "partners", "project" }, allowSetters = true)
     private Land land;
+
+    @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonManagedReference
+    private List<LandTransaction> landTransactions;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -130,7 +138,14 @@ public class Partner implements Serializable {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    public List<LandTransaction> getLandTransactions() {
+        return landTransactions;
+    }
+
+    public void setLandTransactions(List<LandTransaction> landTransactions) {
+        this.landTransactions = landTransactions;
+    }
+// jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {
@@ -157,7 +172,7 @@ public class Partner implements Serializable {
             ", name='" + getName() + "'" +
             ", city='" + getCity() + "'" +
             ", phoneNumber='" + getPhoneNumber() + "'" +
-            ", amount='" + getAmount() + "'" +
+           ", amount='" + getAmount() + "'" +
             "}";
     }
 }

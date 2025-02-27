@@ -60,11 +60,15 @@ public class Booking implements Serializable {
     private BookingStatus bookingStatus;
 
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "booking")
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "booking")
+//    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//    @JsonIgnoreProperties(value = { "booking" }, allowSetters = true)
+//    private List<BookingInstallment> bookingInstallments = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "booking" }, allowSetters = true)
     private List<BookingInstallment> bookingInstallments = new ArrayList<>();
-
 
     @JsonIgnoreProperties(value = { "booking" }, allowSetters = true)
     @OneToOne

@@ -1,19 +1,27 @@
 package com.royalmade.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.List;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A Person.
  */
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "person")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class Person implements Serializable {
+public class
+Person implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,13 +42,17 @@ public class Person implements Serializable {
     @Column(name = "aadhar_number")
     private String aadharNumber;
 
-    @JsonIgnoreProperties(value = { "address", "owner", "purchaser", "partners", "project" }, allowSetters = true)
     @OneToOne( mappedBy = "owner")
+    @JsonIgnoreProperties
     private Land ownedLand;
 
-    @JsonIgnoreProperties(value = { "address", "owner", "purchaser", "partners", "project" }, allowSetters = true)
     @OneToOne( mappedBy = "purchaser")
+    @JsonIgnoreProperties
     private Land purchasedLand;
+
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties
+    private List<LandTransaction> landTransactions;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -147,7 +159,14 @@ public class Person implements Serializable {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    public List<LandTransaction> getLandTransactions() {
+        return landTransactions;
+    }
+
+    public void setLandTransactions(List<LandTransaction> landTransactions) {
+        this.landTransactions = landTransactions;
+    }
+// jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {

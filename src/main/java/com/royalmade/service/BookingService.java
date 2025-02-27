@@ -258,9 +258,9 @@ public class BookingService {
         for (BookingInstallment installment : booking.getBookingInstallments()) {
             BookingInstallmentDTO installmentDTO = new BookingInstallmentDTO();
             installmentDTO.setId(installment.getId());
-            installmentDTO.setInstallmentDate(installment.getInstallmentDate().toString());
+            installmentDTO.setInstallmentDate(installment.getInstallmentDate());
             installmentDTO.setInstallmentAmount(installment.getInstallmentAmount());
-            installmentDTO.setInstallmentStatus(installment.getInstallmentStatus().toString());
+            installmentDTO.setInstallmentStatus(installment.getInstallmentStatus());
             installmentDTOs.add(installmentDTO);
         }
 
@@ -373,17 +373,37 @@ public class BookingService {
     }
 
 
-    public Booking addInstallment(Long id, List<BookingInstallment> bookingInstallments) {
-        Booking booking=bookingRepository.findById(id).orElseThrow(()-> new RuntimeException("Booking "+id+" is not found"));
+//    public BookingPaymentDto addInstallment(Long id, List<BookingInstallment> bookingInstallments) {
+//        Booking booking=bookingRepository.findById(id).orElseThrow(()-> new RuntimeException("Booking "+id+" is not found"));
+//
+//        for(BookingInstallment  installment:bookingInstallments){
+//            installment.setBooking(booking);
+//        }
+//
+//        booking.getBookingInstallments().addAll(bookingInstallments);
+//
+//         bookingInstallmentRepository.saveAll(bookingInstallments);
+//         return booking;
+//
+//    }
 
-        for(BookingInstallment  installment:bookingInstallments){
+    public BookingPaymentDto addInstallment(Long id, List<BookingInstallmentDTO> bookingInstallmentDtos) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking " + id + " is not found"));
+
+        List<BookingInstallment> bookingInstallments = bookingInstallmentDtos.stream().map(dto -> {
+            BookingInstallment installment = new BookingInstallment();
+            installment.setInstallmentDate(dto.getInstallmentDate());
+            installment.setInstallmentAmount(dto.getInstallmentAmount());
+            installment.setInstallmentStatus(dto.getInstallmentStatus());
             installment.setBooking(booking);
-        }
+            return installment;
+        }).collect(Collectors.toList());
 
         booking.getBookingInstallments().addAll(bookingInstallments);
+        bookingInstallmentRepository.saveAll(bookingInstallments);
 
-         bookingInstallmentRepository.saveAll(bookingInstallments);
-         return booking;
-
+        return new BookingPaymentDto(booking);
     }
+
 }

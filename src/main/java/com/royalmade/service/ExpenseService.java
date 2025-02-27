@@ -2,6 +2,7 @@ package com.royalmade.service;
 
 
 import com.royalmade.dto.ExpenseDto;
+import com.royalmade.dto.ExpenseInstallmentDto;
 import com.royalmade.entity.*;
 import com.royalmade.exception.ResourceNotFoundException;
 import com.royalmade.mapper.ExpenseMapper;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -212,24 +214,32 @@ public class ExpenseService {
         return expense; // Return the deleted expense
     }
 
-    public Expense addExpenseinstallment(Long id, List<ExpenseInstallment> expenseInstallments) {
-        Expense expense=expenseRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Expense id not found"));
 
-        for(ExpenseInstallment expenseInstallment: expenseInstallments){
-            expenseInstallment.setExpense(expense);
-            // Update the expense's financial details
-            double expenseAmount = expenseInstallment.getExpenseAmount();
-            expense.setVendorAmountPaid(expense.getVendorAmountPaid() + expenseAmount); // Add to vendorAmountPaid
+
+
+    public Expense addExpenseInstallment(Long id, List<ExpenseInstallmentDto> expenseInstallments) {
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Expense id not found"));
+
+        List<ExpenseInstallment> installments = new ArrayList<>();
+
+        for (ExpenseInstallmentDto expenseInstallmentDto : expenseInstallments) {
+            ExpenseInstallment installment = new ExpenseInstallment();
+            installment.setExpense(expense);
+            installment.setExpenseAmount(expenseInstallmentDto.getExpenseAmount());
+            installment.setExpensePayDate(expenseInstallmentDto.getExpensePayDate());
+            installment.setExpensePayStatus(expenseInstallmentDto.getExpensePayStatus());
+
+            double expenseAmount = expenseInstallmentDto.getExpenseAmount();
+            expense.setVendorAmountPaid(expense.getVendorAmountPaid() + expenseAmount);
             expense.setReamingAmount(expense.getReamingAmount() - expenseAmount);
+
+            installments.add(installment);
         }
-        // Add the installments to the Expense entity's list
-        expense.getExpenseInstallments().addAll(expenseInstallments);
 
-        // Save the expense installments using their respective repository
-        expenselnstallmentRepository.saveAll(expenseInstallments);
-
+        expense.getExpenseInstallments().addAll(installments);
+        expenselnstallmentRepository.saveAll(installments);
         return expenseRepository.save(expense);
-
     }
 
     public Expense getExpenseById(Long id) {

@@ -54,8 +54,8 @@ public class Expense implements Serializable {
 
     @Column(name = "added_on")
     private LocalDate addedOn;
-    @Column(name = "billImg")
-    private String billImg;
+//    @Column(name = "billImg")
+//    private String billImg;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "expense")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "expense" }, allowSetters = true)
@@ -195,13 +195,13 @@ public class Expense implements Serializable {
     }
 
 
-    public String getBillImg() {
-        return billImg;
-    }
-
-    public void setBillImg(String billImg) {
-        this.billImg = billImg;
-    }
+//    public String getBillImg() {
+//        return billImg;
+//    }
+//
+//    public void setBillImg(String billImg) {
+//        this.billImg = billImg;
+//    }
 
     public AppUser getAddedBy() {
         return this.addedBy;

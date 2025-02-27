@@ -1,5 +1,6 @@
 package com.royalmade.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.royalmade.entity.enumeration.ProjectStatus;
 import jakarta.persistence.*;
@@ -37,10 +38,17 @@ public class Project implements Serializable {
     @JoinColumn(unique = true)
     private Land land;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.REMOVE)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "addedBy", "project" }, allowSetters = true)
     private Set<Expense> expenses = new HashSet<>();
+
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.REMOVE)
+//    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//   // @JsonIgnoreProperties(value = {  "project" }, allowSetters = true)
+//    @JsonBackReference
+//    private Set<Contractor> contractors = new HashSet<>();
+
 
     @OneToMany( mappedBy = "project")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -129,6 +137,14 @@ public class Project implements Serializable {
         expense.setProject(this);
         return this;
     }
+
+//    public Set<Contractor> getContractors() {
+//        return contractors;
+//    }
+//
+//    public void setContractors(Set<Contractor> contractors) {
+//        this.contractors = contractors;
+//    }
 
     public Project removeExpense(Expense expense) {
         this.expenses.remove(expense);

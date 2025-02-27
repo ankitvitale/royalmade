@@ -1,6 +1,7 @@
 package com.royalmade.controller;
 
 import com.royalmade.dto.ExpenseDto;
+import com.royalmade.dto.ExpenseInstallmentDto;
 import com.royalmade.entity.*;
 import com.royalmade.entity.enumeration.ExpenseType;
 import com.royalmade.exception.ResourceNotFoundException;
@@ -60,6 +61,64 @@ public class ExpenseController {
     @Autowired
     private ExpenseRepository expenseRepository;
 
+//
+//    @PostMapping("/projects/{projectId}/add-expense")
+//    @PreAuthorize("hasAnyRole('Admin','AppUser')")
+//    public ResponseEntity<Expense> addExpenseToProject(
+//            @PathVariable Long projectId,
+//            @RequestParam String name,
+//            @RequestParam ExpenseType type,
+//            @RequestParam Integer quantity,
+//            @RequestParam String vendorName,
+//            @RequestParam Double price,
+//            @RequestParam Double vendorAmountPaid,
+//            @RequestParam LocalDate addedOn,
+//            @RequestPart("billImg") MultipartFile billImg) {
+//
+//        try {
+//            // Retrieve the authenticated user
+//            String email = JwtAuthenticationFilter.CURRENT_USER;
+//            AppUser appUser = appUserRepository.findByEmail(email);
+//            Admin admin = adminRepository.findByEmail(email);
+//            if (appUser == null && admin == null) {
+//                throw new RuntimeException("User not found");
+//            }
+//
+//            // Retrieve the project by its ID
+//            Project project = projectRepository.findById(projectId)
+//                    .orElseThrow(() -> new ResourceNotFoundException("Project not found with ID: " + projectId));
+//
+//            // Upload the bill image to storage and get the URL
+//             String billImg1=uploadFileToSpace(billImg);
+//
+//            // Calculate total price and remaining amount
+//            double totalPrice = quantity * price;
+//            double remainingAmount = totalPrice - vendorAmountPaid;
+//
+//            // Create and save the expense
+//            Expense expense = new Expense();
+//            expense.setName(name);
+//            expense.setType(type);
+//            expense.setQuantity(quantity);
+//            expense.setVendorName(vendorName);
+//            expense.setPrice(price);
+//            expense.setTotalPrice(totalPrice);
+//            expense.setVendorAmountPaid(vendorAmountPaid);
+//            expense.setReamingAmount(remainingAmount);
+//            expense.setAddedOn(addedOn);
+//            expense.setBillImg(billImg1);
+//            expense.setProject(project);
+//            expense.setAddedBy(appUser);
+//
+//            Expense savedExpense = expenseRepository.save(expense);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(savedExpense);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
 
     @PostMapping("/projects/{projectId}/add-expense")
     @PreAuthorize("hasAnyRole('Admin','AppUser')")
@@ -71,9 +130,7 @@ public class ExpenseController {
             @RequestParam String vendorName,
             @RequestParam Double price,
             @RequestParam Double vendorAmountPaid,
-            @RequestParam LocalDate addedOn,
-            @RequestPart("billImg") MultipartFile billImg) {
-
+            @RequestParam LocalDate addedOn) {
         try {
             // Retrieve the authenticated user
             String email = JwtAuthenticationFilter.CURRENT_USER;
@@ -86,9 +143,6 @@ public class ExpenseController {
             // Retrieve the project by its ID
             Project project = projectRepository.findById(projectId)
                     .orElseThrow(() -> new ResourceNotFoundException("Project not found with ID: " + projectId));
-
-            // Upload the bill image to storage and get the URL
-             String billImg1=uploadFileToSpace(billImg);
 
             // Calculate total price and remaining amount
             double totalPrice = quantity * price;
@@ -105,13 +159,11 @@ public class ExpenseController {
             expense.setVendorAmountPaid(vendorAmountPaid);
             expense.setReamingAmount(remainingAmount);
             expense.setAddedOn(addedOn);
-            expense.setBillImg(billImg1);
             expense.setProject(project);
             expense.setAddedBy(appUser);
 
             Expense savedExpense = expenseRepository.save(expense);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedExpense);
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -150,18 +202,17 @@ public class ExpenseController {
 
 
 
-    @PostMapping("/{id}/expenseInstallment")
-    @PreAuthorize("hasAnyRole('Admin','AppUser')")
-    public ResponseEntity<Expense> addExpenseinstallment(@PathVariable Long id, @RequestBody List<ExpenseInstallment> expenseInstallments){
-        Expense addExpenseinstallment=expenseService.addExpenseinstallment(id,expenseInstallments);
-        return ResponseEntity.ok(addExpenseinstallment);
-    }
+        @PostMapping("/{id}/expenseInstallment")
+        @PreAuthorize("hasAnyRole('Admin','AppUser')")
+        public ResponseEntity<Expense> addExpenseinstallment(@PathVariable Long id, @RequestBody List<ExpenseInstallmentDto> expenseInstallments){
+            Expense addExpenseinstallment=expenseService.addExpenseInstallment(id,expenseInstallments);
+            return ResponseEntity.ok(addExpenseinstallment);
+        }
 
 
 
     @GetMapping("/Allexpenses")
     @PreAuthorize("hasAnyRole('Admin','AppUser')")
-
     public  ResponseEntity<List<Expense>> getAllExpenses(){
         List <Expense> expenses=expenseService.getAllExpenses();
         return ResponseEntity.ok(expenses);

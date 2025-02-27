@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 
 
 @Entity
-
 public class Role {
 	@Id
 	private String roleName;

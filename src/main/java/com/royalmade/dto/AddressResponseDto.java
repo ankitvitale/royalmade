@@ -1,5 +1,7 @@
 package com.royalmade.dto;
 
+import jakarta.persistence.Column;
+
 public class AddressResponseDto {
     private Long id;
     private String landmark;
@@ -9,6 +11,13 @@ public class AddressResponseDto {
     private String state;
     private String country;
 
+    private String muza;
+
+    private String khno;
+
+    private String phno;
+
+    private String plotno;
     public Long getId() {
         return id;
     }
@@ -55,5 +64,37 @@ public class AddressResponseDto {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getMuza() {
+        return muza;
+    }
+
+    public void setMuza(String muza) {
+        this.muza = muza;
+    }
+
+    public String getKhno() {
+        return khno;
+    }
+
+    public void setKhno(String khno) {
+        this.khno = khno;
+    }
+
+    public String getPhno() {
+        return phno;
+    }
+
+    public void setPhno(String phno) {
+        this.phno = phno;
+    }
+
+    public String getPlotno() {
+        return plotno;
+    }
+
+    public void setPlotno(String plotno) {
+        this.plotno = plotno;
     }
 }
