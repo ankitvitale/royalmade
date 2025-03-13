@@ -1,0 +1,96 @@
+package com.royalmade.entity;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.royalmade.entity.enumeration.ExpensePayStatus;
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+
+@Entity
+public class VendorPayment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private LocalDate payDate;
+    private double amount;
+    private String remark;
+    private Double billNo;  // Store billNo directly instead of linking to a specific material
+
+    @Enumerated(EnumType.STRING)
+    private ExpensePayStatus paymentStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "material_id", nullable = false)
+    @JsonBackReference
+    private Material material;
+
+    @ManyToOne
+    @JoinColumn(name = "vendor_id")
+    private Vendor vendor;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getPayDate() {
+        return payDate;
+    }
+
+    public void setPayDate(LocalDate payDate) {
+        this.payDate = payDate;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Double getBillNo() {
+        return billNo;
+    }
+
+    public void setBillNo(Double billNo) {
+        this.billNo = billNo;
+    }
+
+    public ExpensePayStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(ExpensePayStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public Material getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
+    }
+}
