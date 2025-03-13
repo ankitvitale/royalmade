@@ -1,6 +1,7 @@
 package com.royalmade.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.royalmade.entity.enumeration.ExpensePayStatus;
 import jakarta.persistence.*;
 
@@ -29,6 +30,10 @@ public class VendorPayment {
     @JoinColumn(name = "vendor_id")
     private Vendor vendor;
 
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    @JsonIgnoreProperties(value = { "materials", "expenses", "residencies", "land" }, allowSetters = true)
+    private Project project;  // Added Project reference
 
     public Long getId() {
         return id;
@@ -92,5 +97,13 @@ public class VendorPayment {
 
     public void setVendor(Vendor vendor) {
         this.vendor = vendor;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

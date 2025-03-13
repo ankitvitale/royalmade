@@ -14,6 +14,8 @@ public class VendorPaymentDTO {
 
     private Long vendorId;
 
+    private Long projectId;
+
     public Long getId() {
         return id;
     }
@@ -68,5 +70,13 @@ public class VendorPaymentDTO {
 
     public void setVendorId(Long vendorId) {
         this.vendorId = vendorId;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 }

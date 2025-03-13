@@ -2,12 +2,15 @@ package com.royalmade.service;
 
 import com.royalmade.dto.VendorPaymentDTO;
 import com.royalmade.entity.Material;
+import com.royalmade.entity.Project;
 import com.royalmade.entity.Vendor;
 import com.royalmade.entity.VendorPayment;
 import com.royalmade.repo.MaterialRepository;
+import com.royalmade.repo.ProjectRepository;
 import com.royalmade.repo.VendorPaymentRepository;
 import com.royalmade.repo.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,9 @@ public class MeterialService {
     @Autowired
     private VendorRepository vendorRepository;
 
+
+    @Autowired
+    private ProjectRepository projectRepository;
 
         public Vendor addVendors(Vendor vendor) {
         return vendorRepository.save(vendor);
@@ -224,74 +230,77 @@ public class MeterialService {
         );
     }
 
-    public List<Map<String, Object>> getBillDetailsByVendor(Long vendorId) {
-        List<Material> expenses = materialRepository.findByVendorId(vendorId);
-        if (expenses.isEmpty()) {
-            throw new RuntimeException("No bills found for the vendor.");
-        }
 
-        Map<String, Map<String, Object>> billDetailsMap = new HashMap<>();
+  //old get All bills
 
-        for (Material exp : expenses) {
-            String billNo = String.valueOf(exp.getBillNo()); // Convert billNo to String properly
-
-            List<VendorPayment> payments = vendorPaymentRepository.findByVendorIdAndBillNo(vendorId, billNo);
-
-            if (!billDetailsMap.containsKey(billNo)) {
-                Vendor vendor = exp.getVendor();
-                Map<String, Object> billDetails = new HashMap<>();
-                billDetails.put("billNo", billNo);
-                billDetails.put("vendor", Map.of("name", vendor.getName(), "phoneno", vendor.getPhoneNo()));
-                billDetails.put("materials", new ArrayList<Map<String, Object>>());
-                billDetails.put("total", 0.0);
-                billDetails.put("vendorPaidAmount", 0.0);
-                billDetails.put("remainingAmount", 0.0);
-                billDetails.put("payment", new ArrayList<Map<String, Object>>());
-                billDetailsMap.put(billNo, billDetails);
-            }
-
-            Map<String, Object> billDetails = billDetailsMap.get(billNo); // Correct key lookup
-            if (billDetails == null) {
-                throw new RuntimeException("Bill details not found for billNo: " + billNo);
-            }
-
-            List<Map<String, Object>> materials = (List<Map<String, Object>>) billDetails.get("materials");
-            double total = (double) billDetails.get("total");
-
-            Map<String, Object> material = new HashMap<>();
-            material.put("id", exp.getId());
-            material.put("name", exp.getName());
-            material.put("type", exp.getType());
-            material.put("quantity", exp.getQuantity());
-            material.put("price", exp.getPrice());
-            material.put("addedOn", exp.getAddedOn());
-            material.put("billNo", billNo);
-            materials.add(material);
-
-            total += exp.getPrice();
-            billDetails.put("total", total);
-
-            double vendorPaidAmount = payments.stream().mapToDouble(VendorPayment::getAmount).sum();
-            double remainingAmount = total - vendorPaidAmount;
-
-            List<Map<String, Object>> paymentDetails = new ArrayList<>();
-            for (VendorPayment payment : payments) {
-                Map<String, Object> paymentInfo = new HashMap<>();
-                paymentInfo.put("expensePayDate", payment.getPayDate());
-                paymentInfo.put("expenseAmount", payment.getAmount());
-                paymentInfo.put("expensePayStatus", payment.getPaymentStatus().toString());
-                paymentInfo.put("remark", payment.getRemark());
-                paymentDetails.add(paymentInfo);
-            }
-
-            billDetails.put("vendorPaidAmount", vendorPaidAmount);
-            billDetails.put("remainingAmount", remainingAmount);
-            billDetails.put("payment", paymentDetails);
-        }
-
-        return new ArrayList<>(billDetailsMap.values());
-    }
-
+//    public List<Map<String, Object>> getBillDetailsByVendor(Long vendorId) {
+//        List<Material> expenses = materialRepository.findByVendorId(vendorId);
+//        if (expenses.isEmpty()) {
+//            throw new RuntimeException("No bills found for the vendor.");
+//        }
+//
+//        Map<String, Map<String, Object>> billDetailsMap = new HashMap<>();
+//
+//        for (Material exp : expenses) {
+//            String billNo = String.valueOf(exp.getBillNo()); // Convert billNo to String properly
+//
+//            List<VendorPayment> payments = vendorPaymentRepository.findByVendorIdAndBillNo(vendorId, billNo);
+//
+//            if (!billDetailsMap.containsKey(billNo)) {
+//                Vendor vendor = exp.getVendor();
+//                Map<String, Object> billDetails = new HashMap<>();
+//                billDetails.put("billNo", billNo);
+//                billDetails.put("vendor", Map.of("name", vendor.getName(), "phoneno", vendor.getPhoneNo()));
+//                billDetails.put("materials", new ArrayList<Map<String, Object>>());
+//                billDetails.put("total", 0.0);
+//                billDetails.put("vendorPaidAmount", 0.0);
+//                billDetails.put("remainingAmount", 0.0);
+//                billDetails.put("payment", new ArrayList<Map<String, Object>>());
+//                billDetailsMap.put(billNo, billDetails);
+//            }
+//
+//            Map<String, Object> billDetails = billDetailsMap.get(billNo); // Correct key lookup
+//            if (billDetails == null) {
+//                throw new RuntimeException("Bill details not found for billNo: " + billNo);
+//            }
+//
+//            List<Map<String, Object>> materials = (List<Map<String, Object>>) billDetails.get("materials");
+//            double total = (double) billDetails.get("total");
+//
+//            Map<String, Object> material = new HashMap<>();
+//            material.put("id", exp.getId());
+//            material.put("name", exp.getName());
+//            material.put("type", exp.getType());
+//            material.put("quantity", exp.getQuantity());
+//            material.put("price", exp.getPrice());
+//            material.put("addedOn", exp.getAddedOn());
+//            material.put("billNo", billNo);
+//            materials.add(material);
+//
+//            total += exp.getPrice();
+//            billDetails.put("total", total);
+//
+//            double vendorPaidAmount = payments.stream().mapToDouble(VendorPayment::getAmount).sum();
+//            double remainingAmount = total - vendorPaidAmount;
+//
+//            List<Map<String, Object>> paymentDetails = new ArrayList<>();
+//            for (VendorPayment payment : payments) {
+//                Map<String, Object> paymentInfo = new HashMap<>();
+//                paymentInfo.put("expensePayDate", payment.getPayDate());
+//                paymentInfo.put("expenseAmount", payment.getAmount());
+//                paymentInfo.put("expensePayStatus", payment.getPaymentStatus().toString());
+//                paymentInfo.put("remark", payment.getRemark());
+//                paymentDetails.add(paymentInfo);
+//            }
+//
+//            billDetails.put("vendorPaidAmount", vendorPaidAmount);
+//            billDetails.put("remainingAmount", remainingAmount);
+//            billDetails.put("payment", paymentDetails);
+//        }
+//
+//        return new ArrayList<>(billDetailsMap.values());
+//    }
+//
 
 //    public Map<String, Object> addPayment(Double billNo, VendorPaymentDTO paymentDTO) {
 //        List<Material> materials = materialRepository.findByBillNo(billNo);
@@ -360,6 +369,8 @@ public class MeterialService {
 //    }
 //
 
+
+
     public Map<String, Object> addPayment(Double billNo, VendorPaymentDTO paymentDTO) {
         List<Material> materials = materialRepository.findByBillNo(billNo);
         if (materials.isEmpty()) {
@@ -369,7 +380,6 @@ public class MeterialService {
         Vendor vendor = vendorRepository.findById(paymentDTO.getVendorId())
                 .orElseThrow(() -> new RuntimeException("Vendor not found with ID: " + paymentDTO.getVendorId()));
 
-        // Filter materials for the specified vendor
         List<Material> vendorMaterials = materials.stream()
                 .filter(mat -> mat.getVendor().getId().equals(paymentDTO.getVendorId()))
                 .collect(Collectors.toList());
@@ -379,7 +389,11 @@ public class MeterialService {
         }
 
         double totalAmount = vendorMaterials.stream().mapToDouble(Material::getPrice).sum();
-        Material material = vendorMaterials.get(0); // Select the first material for association
+        Material material = vendorMaterials.get(0);
+
+
+        Project project = projectRepository.findById(paymentDTO.getProjectId())
+                .orElseThrow(() -> new RuntimeException("Project not found with ID: " + paymentDTO.getProjectId()));
 
         VendorPayment payment = new VendorPayment();
         payment.setMaterial(material);
@@ -389,12 +403,14 @@ public class MeterialService {
         payment.setAmount(paymentDTO.getAmount());
         payment.setRemark(paymentDTO.getRemark());
         payment.setPaymentStatus(paymentDTO.getPaymentStatus());
+        payment.setProject(project); // ✅ Ensure this line uses the correct Project entity
 
         vendorPaymentRepository.save(payment);
 
         List<VendorPayment> payments = vendorPaymentRepository.findByVendorAndMaterial_BillNo(vendor, billNo);
         double vendorPaidAmount = payments.stream().mapToDouble(VendorPayment::getAmount).sum();
         double remainingAmount = totalAmount - vendorPaidAmount;
+
         List<Map<String, Object>> materialsList = vendorMaterials.stream()
                 .map(mat -> {
                     Map<String, Object> map = new HashMap<>();
@@ -432,7 +448,6 @@ public class MeterialService {
 
 
 
-
     public List<Vendor> getAllVendor() {
             return vendorRepository.findAll();
     }
@@ -448,4 +463,71 @@ public class MeterialService {
             throw new RuntimeException("Vendor with ID " + id + " not found");
         }
     }
+
+    public List<Map<String, Object>> getBillDetailsByVendor(Long vendorId, Long projectId) {
+        List<Material> expenses = materialRepository.findByVendorIdAndProjectId(vendorId, projectId);
+        if (expenses.isEmpty()) {
+            throw new RuntimeException("No bills found for the vendor in this project.");
+        }
+
+        Map<String, Map<String, Object>> billDetailsMap = new HashMap<>();
+
+        for (Material exp : expenses) {
+            String billNo = String.valueOf(exp.getBillNo());
+
+            // Fetch vendor payments based on vendorId, projectId, and billNo
+//            List<VendorPayment> payments = vendorPaymentRepository.findByVendorIdAndProjectIdAndBillNo(vendorId, projectId, billNo);
+            List<VendorPayment> payments = vendorPaymentRepository.findByVendorIdAndProjectIdAndBillNo(vendorId, projectId, exp.getBillNo());
+
+            billDetailsMap.putIfAbsent(billNo, new HashMap<>());
+            Map<String, Object> billDetails = billDetailsMap.get(billNo);
+
+            if (!billDetails.containsKey("vendor")) {
+                Vendor vendor = exp.getVendor();
+                billDetails.put("billNo", billNo);
+                billDetails.put("vendor", Map.of("name", vendor.getName(), "phoneno", vendor.getPhoneNo()));
+                billDetails.put("materials", new ArrayList<Map<String, Object>>());
+                billDetails.put("total", 0.0);
+                billDetails.put("vendorPaidAmount", 0.0);
+                billDetails.put("remainingAmount", 0.0);
+                billDetails.put("payment", new ArrayList<Map<String, Object>>());
+            }
+
+            List<Map<String, Object>> materials = (List<Map<String, Object>>) billDetails.get("materials");
+            double total = (double) billDetails.get("total");
+
+            Map<String, Object> material = new HashMap<>();
+            material.put("id", exp.getId());
+            material.put("name", exp.getName());
+            material.put("type", exp.getType());
+            material.put("quantity", exp.getQuantity());
+            material.put("price", exp.getPrice());
+            material.put("addedOn", exp.getAddedOn());
+            material.put("billNo", billNo);
+            materials.add(material);
+
+            total += exp.getPrice();
+            billDetails.put("total", total);
+
+            double vendorPaidAmount = payments.stream().mapToDouble(VendorPayment::getAmount).sum();
+            double remainingAmount = total - vendorPaidAmount;
+
+            List<Map<String, Object>> paymentDetails = new ArrayList<>();
+            for (VendorPayment payment : payments) {
+                Map<String, Object> paymentInfo = new HashMap<>();
+                paymentInfo.put("expensePayDate", payment.getPayDate());
+                paymentInfo.put("expenseAmount", payment.getAmount());
+                paymentInfo.put("expensePayStatus", payment.getPaymentStatus().toString());
+                paymentInfo.put("remark", payment.getRemark());
+                paymentDetails.add(paymentInfo);
+            }
+
+            billDetails.put("vendorPaidAmount", vendorPaidAmount);
+            billDetails.put("remainingAmount", remainingAmount);
+            billDetails.put("payment", paymentDetails);
+        }
+
+        return new ArrayList<>(billDetailsMap.values());
+    }
+
 }

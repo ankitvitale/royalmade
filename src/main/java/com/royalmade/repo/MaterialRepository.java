@@ -18,4 +18,6 @@ public interface MaterialRepository extends JpaRepository<Material,Long> {
 
     @Query("SELECT m FROM Material m WHERE m.vendor.id = :vendorId")
     List<Material> findByVendorId(@Param("vendorId") Long vendorId);
+
+    List<Material> findByVendorIdAndProjectId(Long vendorId, Long projectId);
 }

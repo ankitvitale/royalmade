@@ -124,13 +124,23 @@ public class MeterialController {
     }
 
 
+// old get all bills
+//@GetMapping("/bills/{vendorId}")
+//@PreAuthorize("hasAnyRole('Admin','AppUser')")
+//public ResponseEntity<List<Map<String, Object>>> getBillsByVendor(@PathVariable Long vendorId) {
+//    List<Map<String, Object>> billDetails = meterialService.getBillDetailsByVendor(vendorId);
+//    return ResponseEntity.ok(billDetails);
+//}
 
-@GetMapping("/bills/{vendorId}")
-@PreAuthorize("hasAnyRole('Admin','AppUser')")
-public ResponseEntity<List<Map<String, Object>>> getBillsByVendor(@PathVariable Long vendorId) {
-    List<Map<String, Object>> billDetails = meterialService.getBillDetailsByVendor(vendorId);
-    return ResponseEntity.ok(billDetails);
-}
+  // new get All bills
+
+    @GetMapping("/bills/{vendorId}/{projectId}")
+    @PreAuthorize("hasAnyRole('Admin','AppUser')")
+    public ResponseEntity<List<Map<String, Object>>> getBillsByVendor(
+            @PathVariable Long vendorId, @PathVariable Long projectId) {
+        List<Map<String, Object>> billDetails = meterialService.getBillDetailsByVendor(vendorId, projectId);
+        return ResponseEntity.ok(billDetails);
+    }
 
     @GetMapping("/bills/details/{billNo}")
     @PreAuthorize("hasAnyRole('Admin','AppUser')")

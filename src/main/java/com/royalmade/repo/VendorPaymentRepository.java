@@ -23,4 +23,8 @@ public interface VendorPaymentRepository extends JpaRepository<VendorPayment, Lo
     List<VendorPayment> findByVendorIdAndBillNo(@Param("vendorId") Long vendorId, @Param("billNo") String billNo);
 
     List<VendorPayment> findByVendorAndMaterial_BillNo(Vendor vendor, Double billNo);
+
+  //  List<VendorPayment> findByVendorIdAndProjectIdAndBillNo(Long vendorId, Long projectId, String billNo);
+    List<VendorPayment> findByVendorIdAndProjectIdAndBillNo(Long vendorId, Long projectId, Double billNo);
+
 }
