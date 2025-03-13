@@ -14,34 +14,45 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
 
     @PostMapping("/addCustomer")
+    @PreAuthorize("hasRole('Admin')")
+
     public ResponseEntity<Customer> AddCustomer(@RequestBody CustomerDto customerDto){
         Customer addcustomer=customerService.AddCustomer(customerDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(addcustomer);
     }
     @GetMapping("/getAllcustomer")
+    @PreAuthorize("hasRole('Admin')")
+
     public ResponseEntity<List<Customer>> getAllCustomers() {
         List<Customer> customers = customerService.getAllCustomers();
         return ResponseEntity.ok(customers);
     }
 
     @GetMapping("/getAllcustomer/{id}")
+    @PreAuthorize("hasRole('Admin')")
+
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
         Customer customer = customerService.getCustomerById(id);
         return ResponseEntity.ok(customer);
     }
 
     @DeleteMapping("/customerdelete/{id}")
+    @PreAuthorize("hasRole('Admin')")
+
     public ResponseEntity<String> deleteCustomerById(@PathVariable Long id) {
         customerService.deleteCustomerById(id);
         return ResponseEntity.ok("Customer deleted successfully");
     }
     @PutMapping("/customerupdate/{id}")
+    @PreAuthorize("hasRole('Admin')")
+
     public ResponseEntity<Customer> updateCustomerById(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
         Customer updatedCustomer = customerService.updateCustomerById(id, customerDto);
         return ResponseEntity.ok(updatedCustomer);

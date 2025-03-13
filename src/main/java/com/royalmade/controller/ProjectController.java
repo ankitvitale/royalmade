@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class ProjectController {
 
     @Autowired
@@ -66,15 +67,7 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
     }
-//    @PreAuthorize("hasAnyRole('Admin','AppUser')")
-//    public ResponseEntity<List<ProjectResponseDto>> getAllProjects() {
-//        List<ProjectResponseDto> projects = projectService.getAllProjects();
-//        if (!projects.isEmpty()) {
-//            return ResponseEntity.ok(projects);
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-//        }
-//    }
+
 
 
 

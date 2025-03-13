@@ -14,6 +14,8 @@ public class Employee {
     private String name;
     private String email;
     private String password;
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "USER_ROLE", joinColumns = {
@@ -65,4 +67,14 @@ public class Employee {
     public void setRole(Set<com.royalmade.entity.Role> role) {
         Role = role;
     }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+
 }

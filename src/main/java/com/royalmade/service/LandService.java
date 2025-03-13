@@ -130,116 +130,7 @@ public class LandService {
     }
 
 
-//    public Land createLand(LandDto landRequestDto) {
-//        logger.info("Received request to create land: {}", landRequestDto);
-//
-//        if (landRequestDto.getAddress() == null) {
-//            logger.error("Address information is missing.");
-//            throw new IllegalArgumentException("Address information is required.");
-//        }
-//
-//        if (landRequestDto.getPurchaser() == null) {
-//            logger.error("Purchaser information is missing.");
-//            throw new IllegalArgumentException("Purchaser information is required.");
-//        }
-//
-//        // Convert Address DTO to Entity
-//        Address address = new Address();
-//        address.setLandmark(landRequestDto.getAddress().getLandmark());
-//        address.setPincode(landRequestDto.getAddress().getPincode());
-//        address.setCity(landRequestDto.getAddress().getCity());
-//        address.setCountry(landRequestDto.getAddress().getCountry());
-//        address.setState(landRequestDto.getAddress().getState());
-//        address.setMuza(landRequestDto.getAddress().getMuza());
-//        address.setKhno(landRequestDto.getAddress().getKhno());
-//        address.setPlotno(landRequestDto.getAddress().getPlotno());
-//        address.setPhno(landRequestDto.getAddress().getPhno());
-//
-//        // Convert Purchaser DTO to Entity
-//        PurchaserDto purchaserDto = landRequestDto.getPurchaser();
-//        Person purchaser = new Person();
-//        purchaser.setName(purchaserDto.getName());
-//        purchaser.setAddress(purchaserDto.getAddress());
-//        purchaser.setPhoneNumber(purchaserDto.getPhoneNumber());
-//        purchaser.setAadharNumber(purchaserDto.getAadharNumber());
-//
-//        OwnerDto ownerDto = landRequestDto.getOwner();
-//        Person owner = new Person();
-//        owner.setName(ownerDto.getName());
-//        owner.setAddress(ownerDto.getAddress());
-//        owner.setPhoneNumber(ownerDto.getPhoneNumber());
-//        owner.setAadharNumber(ownerDto.getAadharNumber());
-//
-//        // Convert Partners DTOs to Partner Entities (Ensure list is not null)
-//        Set<Partner> partners = new HashSet<>();
-//        if (landRequestDto.getPartners() != null) {
-//            partners = landRequestDto.getPartners().stream()
-//                    .map(partnerDto -> {
-//                        Partner partner = new Partner();
-//                        partner.setName(partnerDto.getName());
-//                        partner.setCity(partnerDto.getCity());
-//                        partner.setPhoneNumber(partnerDto.getPhoneNumber());
-//                        partner.setAmount(partnerDto.getAmount());
-//                        partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
-//                        return partner;
-//                    })
-//                    .collect(Collectors.toSet());
-//        }
-//
-//        // Save related entities
-//        addressRepository.save(address);
-//        personRepository.save(purchaser);
-//        partnerRepository.saveAll(partners);
-//
-//        // Calculate sold amount safely
-//        double totalAmount = landRequestDto.getTotalAmount() != null ? landRequestDto.getTotalAmount() : 0;
-//        double agreementAmount = landRequestDto.getAgreementAmount() != null ? landRequestDto.getAgreementAmount() : 0;
-//        double tokenAmount = landRequestDto.getTokenAmount() != null ? landRequestDto.getTokenAmount() : 0;
-//        double soldAmount = totalAmount - (agreementAmount + tokenAmount);
-//
-//        // Create and populate Land entity
-//        Land land = new Land();
-//        land.setArea(landRequestDto.getArea());
-//        land.setTokenAmount(landRequestDto.getTokenAmount());
-//        land.setAgreementAmount(landRequestDto.getAgreementAmount());
-//        land.setTotalAmount(landRequestDto.getTotalAmount());
-//        land.setAddress(address);
-//        land.setOwner(owner);
-//        land.setPurchaser(purchaser);
-//        land.setPartners(partners);
-//
-//        // Save Land entity
-//        Land savedLand = landRepository.save(land);
-//        logger.info("Land saved successfully: {}", savedLand);
-//
-//        return savedLand;
-//    }
 
-
-
-//    public Land createLand(LandRequestDto landRequestDto) {
-//        // Map DTO to Entity
-//        Address address = landRequestDto.getAddress();
-//        Person person = landRequestDto.getPurchaser();
-//        Person person1 = landRequestDto.getOwner();
-//        Set<Partner> partners = landRequestDto.getPartners();
-//
-//        // Save related entities
-//        addressRepository.save(address);
-//        personRepository.save(person);
-//        personRepository.save(person1);
-//        partnerRepository.saveAll(partners);
-//        double soldAmount = landRequestDto.getTotalAmount() - (landRequestDto.getAgreementAmount() + landRequestDto.getTokenAmount());
-//
-//        // Create and save Land entity
-//        Land land = landMapper.toLand(landRequestDto);
-//        land.setAddress(address);
-//        land.setOwner(person1);
-//        land.setPurchaser(person);
-//        land.setPartners(partners);
-//
-//        return landRepository.save(land);
-//    }
 
     public List<Land> getAllLands() {
 
@@ -251,135 +142,53 @@ public class LandService {
                 .orElseThrow(() -> new ResourceNotFoundException("Land not found with id: " + id));
     }
 
+    public Land updateLand(Long landId, LandDto landRequestDto) {
+        logger.info("Received request to update land with ID: {}", landId);
 
-    //    @Transactional
-//    public Land updateLand(Long id, LandRequestDto landRequestDto) {
-//        // Fetch the existing Land entity
-//        Land existingLand = landRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException("Land not found with ID: " + id));
-//        // Update Address
-//        Address updatedAddress = landRequestDto.getAddress();
-//        if (updatedAddress != null) {
-//            if (updatedAddress.getId() != null) {
-//                // Existing address, attach it to the persistence context
-//                Address existingAddress = addressRepository.findById(updatedAddress.getId())
-//                        .orElseThrow(() -> new ResourceNotFoundException("Address not found with ID: " + updatedAddress.getId()));
-//                existingAddress.setLandmark(updatedAddress.getLandmark() != null ? updatedAddress.getLandmark() : existingAddress.getLandmark());
-//                existingAddress.setPincode(updatedAddress.getPincode() != null ? updatedAddress.getPincode() : existingAddress.getPincode());
-//                existingAddress.setCity(updatedAddress.getCity() != null ? updatedAddress.getCity() : existingAddress.getCity());
-//                existingAddress.setState(updatedAddress.getState() != null ? updatedAddress.getState() : existingAddress.getState());
-//                existingAddress.setCountry(updatedAddress.getCountry() != null ? updatedAddress.getCountry() : existingAddress.getCountry());
-//                existingAddress.setMuza(updatedAddress.getMuza() != null ? updatedAddress.getMuza() : existingAddress.getMuza());
-//                existingAddress.setKhno(updatedAddress.getKhno() != null ? updatedAddress.getKhno() : existingAddress.getKhno());
-//                existingAddress.setPhno(updatedAddress.getPhno() != null ? updatedAddress.getPhno() : existingAddress.getPhno());
-//                existingAddress.setPlotno(updatedAddress.getPlotno() != null ? updatedAddress.getPlotno() : existingAddress.getPlotno());
-//                addressRepository.save(existingAddress);
-//                existingLand.setAddress(existingAddress); // Associate with the updated address
-//            } else {
-//                // New address, save it
-//                addressRepository.save(updatedAddress);
-//                existingLand.setAddress(updatedAddress);
-//            }
-//        }
-//        // Update Purchaser
-//        Person updatedPurchaser = landRequestDto.getPurchaser();
-//        if (updatedPurchaser != null) {
-//            updatedPurchaser.setId(existingLand.getPurchaser().getId()); // Retain existing ID
-//            updatedPurchaser.setName(updatedPurchaser.getName() != null ? updatedPurchaser.getName() : existingLand.getPurchaser().getName());
-//            updatedPurchaser.setAddress(updatedPurchaser.getAddress() != null ? updatedPurchaser.getAddress() : existingLand.getPurchaser().getAddress());
-//            updatedPurchaser.setPhoneNumber(updatedPurchaser.getPhoneNumber() != null ? updatedPurchaser.getPhoneNumber() : existingLand.getPurchaser().getPhoneNumber());
-//            personRepository.save(updatedPurchaser);  // You can use merge() instead of save() if it's detached
-//            existingLand.setPurchaser(updatedPurchaser);
-//        }
-//
-//// Update Owner
-//        Person updatedOwner = landRequestDto.getOwner();
-//        if (updatedOwner != null) {
-//            updatedOwner.setId(existingLand.getOwner().getId()); // Retain existing ID
-//            updatedOwner.setName(updatedOwner.getName() != null ? updatedOwner.getName() : existingLand.getOwner().getName());
-//            updatedOwner.setAddress(updatedOwner.getAddress() != null ? updatedOwner.getAddress() : existingLand.getOwner().getAddress());
-//            updatedOwner.setPhoneNumber(updatedOwner.getPhoneNumber() != null ? updatedOwner.getPhoneNumber() : existingLand.getOwner().getPhoneNumber());
-//            personRepository.save(updatedOwner);  // Use merge() instead of save() if necessary
-//            existingLand.setOwner(updatedOwner);
-//        }
-//
-//
-//// Update Partners
-//        Set<Partner> updatedPartners = landRequestDto.getPartners();
-//        if (updatedPartners != null && !updatedPartners.isEmpty()) {
-//            // Clear existing partners and replace with new ones
-//            partnerRepository.deleteAll(existingLand.getPartners());
-//            updatedPartners.forEach(partner -> {
-//                if (partner.getId() == null) {
-//                    // New Partner: Save directly
-//                    partnerRepository.save(partner);
-//                } else {
-//                    // Existing Partner: Update fields
-//                    Partner existingPartner = partnerRepository.findById(partner.getId())
-//                            .orElseThrow(() -> new ResourceNotFoundException("Partner not found with ID: " + partner.getId()));
-//                    existingPartner.setName(partner.getName() != null ? partner.getName() : existingPartner.getName());
-//                    existingPartner.setCity(partner.getCity() != null ? partner.getCity() : existingPartner.getCity());
-//                    existingPartner.setPhoneNumber(partner.getPhoneNumber() != null ? partner.getPhoneNumber() : existingPartner.getPhoneNumber());
-//               //     existingPartner.setAmount(partner.getAmount() != null ? partner.getAmount() : existingPartner.getAmount());
-//                    existingPartner.setPaymentDate(partner.getPaymentDate() != null ? partner.getPaymentDate() : existingPartner.getPaymentDate());
-//                    partnerRepository.save(existingPartner);
-//                }
-//            });
-//            existingLand.setPartners(updatedPartners);
-//        }
-//
-//
-////        // Update other fields of the Land entity
-//        existingLand.setArea(landRequestDto.getArea());
-//        existingLand.setTokenAmount(landRequestDto.getTokenAmount());
-//        existingLand.setAgreementAmount(landRequestDto.getAgreementAmount());
-//        existingLand.setTotalAmount(landRequestDto.getTotalAmount());
-////
-//        // Calculate and set soldAmount
-//        double soldAmount = landRequestDto.getTotalAmount() -
-//                (landRequestDto.getAgreementAmount() + landRequestDto.getTokenAmount());
-//        // existingLand.setSoldAmount(soldAmount);
-//
-//        // Save and return the updated Land entity
-//        return landRepository.save(existingLand);
-//    }
+        Land existingLand = landRepository.findById(landId)
+                .orElseThrow(() -> new EntityNotFoundException("Land not found with ID: " + landId));
 
-
-    public Land updateLand(Long id, LandDto landRequestDto) {
-        logger.info("Received request to update land with ID: {}", id);
-
-        // Fetch existing land record
-        Land existingLand = landRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Land not found with ID: " + id));
+        if (landRequestDto.getAddress() == null) {
+            throw new IllegalArgumentException("Address information is required.");
+        }
+        if (landRequestDto.getPurchaser() == null) {
+            throw new IllegalArgumentException("Purchaser information is required.");
+        }
 
         // Update Address
         Address address = existingLand.getAddress();
-        if (landRequestDto.getAddress() != null) {
-            address.setLandmark(landRequestDto.getAddress().getLandmark());
-            address.setPincode(landRequestDto.getAddress().getPincode());
-            address.setCity(landRequestDto.getAddress().getCity());
-            address.setCountry(landRequestDto.getAddress().getCountry());
-            address.setState(landRequestDto.getAddress().getState());
-            address.setMuza(landRequestDto.getAddress().getMuza());
-            address.setKhno(landRequestDto.getAddress().getKhno());
-            address.setPlotno(landRequestDto.getAddress().getPlotno());
-            address.setPhno(landRequestDto.getAddress().getPhno());
-            addressRepository.save(address);
-        }
+        address.setLandmark(landRequestDto.getAddress().getLandmark());
+        address.setPincode(landRequestDto.getAddress().getPincode());
+        address.setCity(landRequestDto.getAddress().getCity());
+        address.setCountry(landRequestDto.getAddress().getCountry());
+        address.setState(landRequestDto.getAddress().getState());
+        address.setMuza(landRequestDto.getAddress().getMuza());
+        address.setKhno(landRequestDto.getAddress().getKhno());
+        address.setPlotno(landRequestDto.getAddress().getPlotno());
+        address.setPhno(landRequestDto.getAddress().getPhno());
+        addressRepository.save(address);
 
         // Update Purchaser
-        if (landRequestDto.getPurchaser() != null) {
-            PurchaserDto purchaserDto = landRequestDto.getPurchaser();
-            Person purchaser = existingLand.getPurchaser();
-            purchaser.setName(purchaserDto.getName());
-            purchaser.setAddress(purchaserDto.getAddress());
-            purchaser.setPhoneNumber(purchaserDto.getPhoneNumber());
-            purchaser.setAadharNumber(purchaserDto.getAadharNumber());
-            personRepository.save(purchaser);
-        }
+        Person purchaser = existingLand.getPurchaser();
+        PurchaserDto purchaserDto = landRequestDto.getPurchaser();
+        purchaser.setName(purchaserDto.getName());
+        purchaser.setAddress(purchaserDto.getAddress());
+        purchaser.setPhoneNumber(purchaserDto.getPhoneNumber());
+        purchaser.setAadharNumber(purchaserDto.getAadharNumber());
+        personRepository.save(purchaser);
+
+        // Update Owner
+        Person owner = existingLand.getOwner();
+        OwnerDto ownerDto = landRequestDto.getOwner();
+        owner.setName(ownerDto.getName());
+        owner.setAddress(ownerDto.getAddress());
+        owner.setPhoneNumber(ownerDto.getPhoneNumber());
+        owner.setAadharNumber(ownerDto.getAadharNumber());
+        personRepository.save(owner);
 
         // Update Partners
         if (landRequestDto.getPartners() != null) {
+            partnerRepository.deleteAll(existingLand.getPartners());
             Set<Partner> updatedPartners = landRequestDto.getPartners().stream()
                     .map(partnerDto -> {
                         Partner partner = new Partner();
@@ -391,25 +200,108 @@ public class LandService {
                         return partner;
                     })
                     .collect(Collectors.toSet());
-
-            // Remove old partners and add new ones
-            partnerRepository.deleteAll(existingLand.getPartners());
             partnerRepository.saveAll(updatedPartners);
             existingLand.setPartners(updatedPartners);
         }
+
+        // Calculate sold amount safely
+        double totalAmount = landRequestDto.getTotalAmount() != null ? landRequestDto.getTotalAmount() : 0;
+        double agreementAmount = landRequestDto.getAgreementAmount() != null ? landRequestDto.getAgreementAmount() : 0;
+        double tokenAmount = landRequestDto.getTokenAmount() != null ? landRequestDto.getTokenAmount() : 0;
+        double soldAmount = totalAmount - (agreementAmount + tokenAmount);
 
         // Update Land entity
         existingLand.setArea(landRequestDto.getArea());
         existingLand.setTokenAmount(landRequestDto.getTokenAmount());
         existingLand.setAgreementAmount(landRequestDto.getAgreementAmount());
         existingLand.setTotalAmount(landRequestDto.getTotalAmount());
+        existingLand.setAddress(address);
+        existingLand.setOwner(owner);
+        existingLand.setPurchaser(purchaser);
 
-        // Save updated entity
-        Land savedLand = landRepository.save(existingLand);
-        logger.info("Land updated successfully: {}", savedLand);
+        Land updatedLand = landRepository.save(existingLand);
+        logger.info("Land updated successfully: {}", updatedLand);
 
-        return savedLand;
+        return updatedLand;
     }
+
+
+// old update code
+//    public Land updateLand(Long id, LandDto landRequestDto) {
+//        logger.info("Received request to update land with ID: {}", id);
+//
+//        // Fetch existing land record
+//        Land existingLand = landRepository.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException("Land not found with ID: " + id));
+//
+//        // Update Address
+//        Address address = existingLand.getAddress();
+//        if (landRequestDto.getAddress() != null) {
+//            address.setLandmark(landRequestDto.getAddress().getLandmark());
+//            address.setPincode(landRequestDto.getAddress().getPincode());
+//            address.setCity(landRequestDto.getAddress().getCity());
+//            address.setCountry(landRequestDto.getAddress().getCountry());
+//            address.setState(landRequestDto.getAddress().getState());
+//            address.setMuza(landRequestDto.getAddress().getMuza());
+//            address.setKhno(landRequestDto.getAddress().getKhno());
+//            address.setPlotno(landRequestDto.getAddress().getPlotno());
+//            address.setPhno(landRequestDto.getAddress().getPhno());
+//            addressRepository.save(address);
+//        }
+//
+//        // Update Purchaser
+//        if (landRequestDto.getPurchaser() != null) {
+//            PurchaserDto purchaserDto = landRequestDto.getPurchaser();
+//            Person purchaser = existingLand.getPurchaser();
+//            purchaser.setName(purchaserDto.getName());
+//            purchaser.setAddress(purchaserDto.getAddress());
+//            purchaser.setPhoneNumber(purchaserDto.getPhoneNumber());
+//            purchaser.setAadharNumber(purchaserDto.getAadharNumber());
+//            personRepository.save(purchaser);
+//        }
+
+        // Update Owner
+
+//        if (landRequestDto.getOwner() != null) {
+//            updatedOwner.setId(existingLand.getOwner().getId()); // Retain existing ID
+//            updatedOwner.setName(updatedOwner.getName() != null ? updatedOwner.getName() : existingLand.getOwner().getName());
+//            updatedOwner.setAddress(updatedOwner.getAddress() != null ? updatedOwner.getAddress() : existingLand.getOwner().getAddress());
+//            updatedOwner.setPhoneNumber(updatedOwner.getPhoneNumber() != null ? updatedOwner.getPhoneNumber() : existingLand.getOwner().getPhoneNumber());
+//            personRepository.save(updatedOwner);  // Use merge() instead of save() if necessary
+//            existingLand.setOwner(updatedOwner);
+//        }
+        // Update Partners
+//        if (landRequestDto.getPartners() != null) {
+//            Set<Partner> updatedPartners = landRequestDto.getPartners().stream()
+//                    .map(partnerDto -> {
+//                        Partner partner = new Partner();
+//                        partner.setName(partnerDto.getName());
+//                        partner.setCity(partnerDto.getCity());
+//                        partner.setPhoneNumber(partnerDto.getPhoneNumber());
+//                        partner.setAmount(partnerDto.getAmount());
+//                        partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
+//                        return partner;
+//                    })
+//                    .collect(Collectors.toSet());
+//
+//            // Remove old partners and add new ones
+//            partnerRepository.deleteAll(existingLand.getPartners());
+//            partnerRepository.saveAll(updatedPartners);
+//            existingLand.setPartners(updatedPartners);
+//        }
+//
+//        // Update Land entity
+//        existingLand.setArea(landRequestDto.getArea());
+//        existingLand.setTokenAmount(landRequestDto.getTokenAmount());
+//        existingLand.setAgreementAmount(landRequestDto.getAgreementAmount());
+//        existingLand.setTotalAmount(landRequestDto.getTotalAmount());
+//
+//        // Save updated entity
+//        Land savedLand = landRepository.save(existingLand);
+//        logger.info("Land updated successfully: {}", savedLand);
+//
+//        return savedLand;
+//    }
 
     public void deleteLand(Long id) {
         // Fetch the existing Land entity by ID
@@ -846,4 +738,26 @@ public class LandService {
     }
 
 
+    public Land addPartnerToLand(Long landId, PartnerDto partnerDto) {
+        logger.info("Received request to add partner to land with ID: {}", landId);
+
+        Land land = landRepository.findById(landId)
+                .orElseThrow(() -> new EntityNotFoundException("Land not found with ID: " + landId));
+
+        Partner partner = new Partner();
+        partner.setName(partnerDto.getName());
+        partner.setCity(partnerDto.getCity());
+        partner.setPhoneNumber(partnerDto.getPhoneNumber());
+      //  partner.setAmount(partnerDto.getAmount());
+   //    partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
+        partner.setLand(land);
+
+        partnerRepository.save(partner);
+
+        land.getPartners().add(partner);
+        landRepository.save(land);
+
+        logger.info("Partner added successfully to land ID: {}", landId);
+        return land;
+    }
 }

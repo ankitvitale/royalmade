@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class OfferLatterController {
 
     @Autowired
@@ -43,6 +44,7 @@ public class OfferLatterController {
     }
 
     @DeleteMapping("/deleteOfferlatter/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<String> deleteOfferlatter(@PathVariable Long id) {
         offerLatterService.deleteOfferlatter(id);
         return ResponseEntity.ok("delete Offer latter successfully");

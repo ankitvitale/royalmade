@@ -8,6 +8,7 @@ public class BookingInstallmentDTO {
     private Long id;
     private LocalDate installmentDate;
     private Double installmentAmount;
+    private String remark;
     private InstallmentStatus installmentStatus;
 
     public Long getId() {
@@ -32,6 +33,14 @@ public class BookingInstallmentDTO {
 
     public void setInstallmentAmount(Double installmentAmount) {
         this.installmentAmount = installmentAmount;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public InstallmentStatus getInstallmentStatus() {

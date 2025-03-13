@@ -2,7 +2,7 @@ package com.royalmade.service;
 
 
 
-import com.royalmade.dto.ExpenceProjectDto;
+import com.royalmade.dto.*;
 import com.royalmade.entity.*;
 import com.royalmade.entity.enumeration.UserType;
 import com.royalmade.repo.*;
@@ -116,17 +116,36 @@ public class UserService {
 			return supervisor;
 	}
 
-    public AppUser appUserRegister(AppUser appUser) {
-			Role role=roleDao.findById("AppUser").get();
-			Set<Role> appUserRole=new HashSet<>();
-		    appUserRole.add(role);
-		    appUser.setRole(appUserRole);
-			appUser.setPassword(getEncodedPassword(appUser.getPassword()));
-			appUser.setUserType(UserType.AppUser);
-			appUserRepository.save(appUser);
-		    return appUser;
+//    public AppUser appUserRegister(AppUser appUser) {
+//			Role role=roleDao.findById("AppUser").get();
+//			Set<Role> appUserRole=new HashSet<>();
+//		    appUserRole.add(role);
+//		    appUser.setRole(appUserRole);
+//			appUser.setPassword(getEncodedPassword(appUser.getPassword()));
+//			appUser.setUserType(UserType.AppUser);
+//			appUserRepository.save(appUser);
+//		    return appUser;
+//
+//    }
 
-    }
+	public AppUserDtos appUserRegister(AppUserDtos appUserDto) {
+		Role role = roleDao.findById("AppUser").get();
+		Set<Role> appUserRole = new HashSet<>();
+		appUserRole.add(role);
+
+		AppUser appUser = new AppUser();
+		appUser.setUsername(appUserDto.getUsername());
+		appUser.setName(appUserDto.getName());
+		appUser.setEmail(appUserDto.getEmail());
+		appUser.setPassword(getEncodedPassword(appUserDto.getPassword()));
+		appUser.setUserType(UserType.AppUser);
+		appUser.setRole(appUserRole);
+
+		AppUser savedUser = appUserRepository.save(appUser);
+
+		return new AppUserDtos(savedUser.getUsername(), savedUser.getName(), savedUser.getEmail(), null);
+	}
+
 
 	public List<AppUser> getAllUser() {
 		return  appUserRepository.findAll();
@@ -163,4 +182,56 @@ public class UserService {
 				.map(site -> modelMapper.map(site, ExpenceProjectDto.class))
 				.collect(Collectors.toList());
 	}
+
+	public List<AppUserDTO> getAllSupervisors() {
+		List<AppUser> users = appUserRepository.findAll();
+		return users.stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
+
+	private AppUserDTO convertToDTO(AppUser user) {
+		List<MaterialDTO> materials = user.getMaterials().stream().map(material ->
+				new MaterialDTO(
+						material.getId(),
+						material.getName(),
+						material.getType(),
+						material.getQuantity(),
+						material.getPrice(),
+						material.getAddedOn(),
+						material.getPayments().stream().map(payment ->
+								new PaymentDTO(
+										payment.getId(),
+										payment.getPayDate(),
+										payment.getAmount(),
+										payment.getRemark(),
+										payment.getPaymentStatus()
+								)
+						).collect(Collectors.toList())
+				)
+		).collect(Collectors.toList());
+
+		return new AppUserDTO(
+				user.getId(),
+				user.getUsername(),
+				user.getName(),
+				user.getEmail(),
+				user.getUserType().toString(),
+				materials
+		);
+	}
+
+
+	public List<Employee> getAllEmployees() {
+		return employeeRepository.findAllActiveEmployees();
+	}
+
+	public boolean deleteEmployee(Long id) {
+		return employeeRepository.findById(id)
+				.map(employee -> {
+					employee.setDeleted(true);
+					employeeRepository.save(employee);
+					return true;
+				}).orElse(false);
+	}
+
+
 }

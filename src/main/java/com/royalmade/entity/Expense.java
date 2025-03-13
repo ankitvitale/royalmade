@@ -2,6 +2,7 @@ package com.royalmade.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.royalmade.entity.enumeration.ExpenseType;
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -60,10 +61,10 @@ public class Expense implements Serializable {
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "expense" }, allowSetters = true)
     private List<ExpenseInstallment> expenseInstallments = new ArrayList<>();
-    @JsonIgnoreProperties(value = { "expense" }, allowSetters = true)
-    @ManyToOne
-  //  @JoinColumn(unique = true)
-    private AppUser addedBy;
+//    @JsonIgnoreProperties(value = { "expense" }, allowSetters = true)
+//    @ManyToOne
+//    @JsonManagedReference
+//    private AppUser addedBy;
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "land", "expenses", "residencies" }, allowSetters = true)
@@ -203,18 +204,18 @@ public class Expense implements Serializable {
 //        this.billImg = billImg;
 //    }
 
-    public AppUser getAddedBy() {
-        return this.addedBy;
-    }
+//    public AppUser getAddedBy() {
+//        return this.addedBy;
+//    }
+//
+//    public void setAddedBy(AppUser appUser) {
+//        this.addedBy = appUser;
+//    }
 
-    public void setAddedBy(AppUser appUser) {
-        this.addedBy = appUser;
-    }
-
-    public Expense addedBy(AppUser appUser) {
-        this.setAddedBy(appUser);
-        return this;
-    }
+//    public Expense addedBy(AppUser appUser) {
+//        this.setAddedBy(appUser);
+//        return this;
+//    }
 
     public Project getProject() {
         return this.project;

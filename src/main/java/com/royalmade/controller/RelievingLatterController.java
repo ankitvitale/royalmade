@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class RelievingLatterController {
 
     @Autowired
@@ -23,14 +24,12 @@ public class RelievingLatterController {
 
     @GetMapping("/getAllRelievingLatter")
     @PreAuthorize("hasRole('Admin')")
-
     public List<RelievingLatter> getAllRelievingLatter(){
         return relievingLatterService.getAllRelievingLatter();
     }
 
     @GetMapping("/getAllRelievingLatterbyid/{id}")
     @PreAuthorize("hasRole('Admin')")
-
     public RelievingLatter getAllRelievingLatterbyid(@PathVariable long id){
         return  relievingLatterService.getAllRelievingLatterbyid(id);
     }

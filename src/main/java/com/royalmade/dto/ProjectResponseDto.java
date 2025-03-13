@@ -9,6 +9,11 @@ public class ProjectResponseDto {
     private Long id;
     private String name;
     private ProjectStatus status;
+
+    private String totalflat;
+
+    private String buildingSize;
+
     private LandResponseDto land;
 
 
@@ -34,6 +39,22 @@ public class ProjectResponseDto {
 
     public void setStatus(ProjectStatus status) {
         this.status = status;
+    }
+
+    public String getTotalflat() {
+        return totalflat;
+    }
+
+    public void setTotalflat(String totalflat) {
+        this.totalflat = totalflat;
+    }
+
+    public String getBuildingSize() {
+        return buildingSize;
+    }
+
+    public void setBuildingSize(String buildingSize) {
+        this.buildingSize = buildingSize;
     }
 
     public LandResponseDto getLand() {

@@ -22,17 +22,14 @@ import java.util.Collections;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_URLS = {
-            "swagger-ui/index.html",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/{projectId}/expenses",
-            "/appUserRegister",
-            "/createNewLead",
-            "/registerAdmin",
-            "/auth/login" ,
-            "/employeeregister",
+
+            "/api/appUserRegister",
+            "/api/createNewLead",
+            "/api/registerAdmin",
+            "/api/auth/login" ,
+            "/api/employeeregister",
             "/hello",
-            "/getAllLeads",
+            "/api/getAllLeads",
             "/{id}/addLogs",
             "/getlead/{id}",
             "/getkLandInfo",
@@ -40,13 +37,7 @@ public class SecurityConfig {
             "/getProjectById/{id}",
             "/getAllland",
             "/land/{id}",
-            "/createResidency",
-            "/allResidency","/allResidencybyid/{id}","/updateresidency/{id}",
-            "/createProject","/getAllProjects","/addexpense","/projects/{projectId}/add-expense","/supervisorRegister",
-            "/createOfferLatter","/getOfferlatter","/singleOfferlatter/{id}","/updateOfferlatter/{id}","/deleteOfferlatter/{id}",
-            "/createRelievinglatter","/getAllRelievingLatter","/getAllRelievingLatterbyid/{id}","/updateRelievingLatter/{id}","/deleteRelievingLatter/{id}"
-            ,"/createBooking","/bookings","/addCustomer","/getAllcustomer","/getAllcustomer/{id}","/customerdelete/{id}","/customerupdate/{id}","/expenses/by-vendor","/updateExpense/{expenceId}"
-            ,"/updateProject/{id}","/Allexpenses","/count"
+
     };
 
 

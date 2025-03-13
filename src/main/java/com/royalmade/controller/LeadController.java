@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
+@RequestMapping("/api")
 public class LeadController {
 
     @Autowired
@@ -33,17 +34,15 @@ public class LeadController {
         return ResponseEntity.ok(savedLead);
     }
 
-
-
     @PostMapping("/{id}/addLogs")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Employee')")
     public ResponseEntity<Lead> addLogsToLead(@PathVariable Long id, @RequestBody List<LeadLog> leadLogs) {
         Lead updatedLead = leadService.addLogsToLead(id, leadLogs);
         return ResponseEntity.ok(updatedLead);
     }
 
     @GetMapping("/getlead/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Employee')")
     public ResponseEntity<Lead> getLeadById(@PathVariable Long id) {
         Lead lead = leadService.getLeadById(id); // Fetch the lead with logs
         return ResponseEntity.ok(lead);
@@ -74,7 +73,7 @@ public class LeadController {
     }
 
     @PostMapping("/remark/{id}/remark")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Employee')")
     public ResponseEntity<Lead> addRemark(@PathVariable Long id, @RequestBody RemarkRequest remarkRequest) {
         Lead updatedLead = leadService.addRemark(id, remarkRequest.getRemark(), remarkRequest.getRemarkdate());
         return ResponseEntity.ok(updatedLead);

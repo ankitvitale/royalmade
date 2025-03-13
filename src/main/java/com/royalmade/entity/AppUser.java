@@ -2,6 +2,7 @@ package com.royalmade.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.royalmade.entity.enumeration.UserType;
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -44,9 +45,13 @@ public class AppUser implements Serializable {
     @Column(name = "user_type")
     private UserType userType;
 
+//    @OneToMany(mappedBy = "addedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnoreProperties(value = { "addedBy", "project" }, allowSetters = true)
+//    private List<Expense> expenses = new ArrayList<>();
+
     @OneToMany(mappedBy = "addedBy", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties(value = { "addedBy", "project" }, allowSetters = true)
-    private List<Expense> expenses = new ArrayList<>();
+  @JsonIgnoreProperties(value = { "addedBy", "project" }, allowSetters = true)
+    private List<Material> materials  = new ArrayList<>();
 
     @OneToMany
     @JsonIgnoreProperties(value = { "appUser", "expenses", "residencies", "land" }, allowSetters = true)
@@ -160,12 +165,20 @@ public class AppUser implements Serializable {
         this.allowedSite = allowedSite;
     }
 
-    public List<Expense> getExpenses() {
-        return expenses;
+//    public List<Expense> getExpenses() {
+//        return expenses;
+//    }
+//
+//    public void setExpenses(List<Expense> expenses) {
+//        this.expenses = expenses;
+//    }
+
+    public List<Material> getMaterials() {
+        return materials;
     }
 
-    public void setExpenses(List<Expense> expenses) {
-        this.expenses = expenses;
+    public void setMaterials(List<Material> materials) {
+        this.materials = materials;
     }
 
 

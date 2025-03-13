@@ -261,6 +261,8 @@ public class BookingService {
             installmentDTO.setInstallmentDate(installment.getInstallmentDate());
             installmentDTO.setInstallmentAmount(installment.getInstallmentAmount());
             installmentDTO.setInstallmentStatus(installment.getInstallmentStatus());
+            installmentDTO.setRemark(installment.getRemark());
+
             installmentDTOs.add(installmentDTO);
         }
 
@@ -395,6 +397,7 @@ public class BookingService {
             BookingInstallment installment = new BookingInstallment();
             installment.setInstallmentDate(dto.getInstallmentDate());
             installment.setInstallmentAmount(dto.getInstallmentAmount());
+            installment.setRemark(dto.getRemark());
             installment.setInstallmentStatus(dto.getInstallmentStatus());
             installment.setBooking(booking);
             return installment;

@@ -1,6 +1,7 @@
 package com.royalmade.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.royalmade.entity.enumeration.ExpensePayStatus;
 import com.royalmade.entity.enumeration.InstallmentStatus;
 import jakarta.persistence.*;
@@ -24,6 +25,7 @@ public class ExpenseInstallment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "bookingInstallment" }, allowSetters = true)
+    @JsonManagedReference
     private Expense expense;
 
     public Long getId() {

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api")
 public class ResidencyController {
 
     @Autowired
@@ -22,6 +23,7 @@ public class ResidencyController {
 
 
     @PostMapping("/createResidency")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Residency> createResidency(@RequestBody ResidencyDto residencyDto){
         Residency createResidency= residencyService.createResidency(residencyDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createResidency);
@@ -29,6 +31,7 @@ public class ResidencyController {
     }
 
     @GetMapping("/allResidency")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<List<Residency>> getAllResidencies() {
         List<Residency> residencies = residencyService.getAllResidencies();
         return ResponseEntity.ok(residencies);
@@ -36,6 +39,7 @@ public class ResidencyController {
 
     // Get residency by ID
     @GetMapping("/allResidencybyid/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Residency> getResidencyById(@PathVariable Long id) {
         Residency residency = residencyService.getResidencyById(id);
         return ResponseEntity.ok(residency);

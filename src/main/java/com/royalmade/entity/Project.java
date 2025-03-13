@@ -33,15 +33,23 @@ public class Project implements Serializable {
     @Column(name = "status")
     private ProjectStatus status;
 
+    @Column(name = "totalflat")
+    private String totalflat;
+    @Column(name = "buildingSize")
+    private String buildingSize;
+
     @JsonIgnoreProperties(value = { "address", "owner", "purchaser", "partners", "project" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Land land;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.REMOVE)
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "addedBy", "project" }, allowSetters = true)
-    private Set<Expense> expenses = new HashSet<>();
+
+
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.REMOVE)
+//    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//    @JsonIgnoreProperties(value = { "addedBy", "project" }, allowSetters = true)
+//    private Set<Expense> expenses = new HashSet<>();
+
 
 //    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.REMOVE)
 //    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -113,30 +121,46 @@ public class Project implements Serializable {
         return this;
     }
 
-    public Set<Expense> getExpenses() {
-        return this.expenses;
+    public String getTotalflat() {
+        return totalflat;
     }
 
-    public void setExpenses(Set<Expense> expenses) {
-        if (this.expenses != null) {
-            this.expenses.forEach(i -> i.setProject(null));
-        }
-        if (expenses != null) {
-            expenses.forEach(i -> i.setProject(this));
-        }
-        this.expenses = expenses;
+    public void setTotalflat(String totalflat) {
+        this.totalflat = totalflat;
     }
 
-    public Project expenses(Set<Expense> expenses) {
-        this.setExpenses(expenses);
-        return this;
+    public String getBuildingSize() {
+        return buildingSize;
     }
 
-    public Project addExpense(Expense expense) {
-        this.expenses.add(expense);
-        expense.setProject(this);
-        return this;
+    public void setBuildingSize(String buildingSize) {
+        this.buildingSize = buildingSize;
     }
+
+//    public Set<Expense> getExpenses() {
+//        return this.expenses;
+//    }
+//
+//    public void setExpenses(Set<Expense> expenses) {
+//        if (this.expenses != null) {
+//            this.expenses.forEach(i -> i.setProject(null));
+//        }
+//        if (expenses != null) {
+//            expenses.forEach(i -> i.setProject(this));
+//        }
+//        this.expenses = expenses;
+//    }
+//
+//    public Project expenses(Set<Expense> expenses) {
+//        this.setExpenses(expenses);
+//        return this;
+//    }
+//
+//    public Project addExpense(Expense expense) {
+//        this.expenses.add(expense);
+//        expense.setProject(this);
+//        return this;
+//    }
 
 //    public Set<Contractor> getContractors() {
 //        return contractors;
@@ -146,11 +170,11 @@ public class Project implements Serializable {
 //        this.contractors = contractors;
 //    }
 
-    public Project removeExpense(Expense expense) {
-        this.expenses.remove(expense);
-        expense.setProject(null);
-        return this;
-    }
+//    public Project removeExpense(Expense expense) {
+//        this.expenses.remove(expense);
+//        expense.setProject(null);
+//        return this;
+//    }
 
     public Set<Residency> getResidencies() {
         return this.residencies;

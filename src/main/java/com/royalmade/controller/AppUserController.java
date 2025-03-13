@@ -1,6 +1,8 @@
 package com.royalmade.controller;
 
 
+import com.royalmade.dto.AppUserDTO;
+import com.royalmade.dto.AppUserDtos;
 import com.royalmade.dto.ExpenceProjectDto;
 import com.royalmade.dto.ProjectResponseDto;
 import com.royalmade.entity.AppUser;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class AppUserController {
 
     @Autowired
@@ -27,12 +30,17 @@ public class AppUserController {
         return userService.supervisorRegister(supervisor);
     }
 
+
     @PostMapping("/appUserRegister")
-    public AppUser appUserRegister(@RequestBody AppUser appUser){
-        return userService.appUserRegister(appUser);
+    public AppUserDtos appUserRegister(@RequestBody AppUserDtos appUserDto) {
+        return userService.appUserRegister(appUserDto);
     }
 
-
+    @GetMapping("/all-supervisors")
+    @PreAuthorize("hasRole('Admin')")
+    public List<AppUserDTO> getAllSupervisors() {
+        return userService.getAllSupervisors();
+    }
 
     @GetMapping("/AllSupervisor")
     @PreAuthorize("hasRole('Admin')")

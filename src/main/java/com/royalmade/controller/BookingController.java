@@ -21,29 +21,19 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api")
 public class BookingController {
     @Autowired
     private BookingService bookingService;
 
     @PostMapping("/createBooking")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Booking> createflatbooking(@RequestBody BookingDto bookingDto){
         Booking flatbooking=bookingService.createFlatBooking(bookingDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(flatbooking);
 
     }
-//    @PostMapping("/{id}/addInstallment")
-//    @PreAuthorize("hasRole('Admin')")
-//    public ResponseEntity<Booking> addinstallment(@PathVariable Long id, @RequestBody List<BookingInstallment> bookingInstallments){
-//        Booking addInstallment=bookingService.addInstallment(id,bookingInstallments);
-//        return ResponseEntity.ok(addInstallment);
-//    }
 
-//    @PostMapping("/{id}/addInstallment")
-//    @PreAuthorize("hasRole('Admin')")
-//    public ResponseEntity<BookingPaymentDto> addinstallment(@PathVariable Long id, @RequestBody BookingInstallment[] bookingInstallments) {
-//        Booking addInstallment = bookingService.addInstallment(id, Arrays.asList(bookingInstallments));
-//        return ResponseEntity.ok(addInstallment);
-//    }
 @PostMapping("/{id}/addInstallment")
 @PreAuthorize("hasRole('Admin')")
 public ResponseEntity<BookingPaymentDto> addinstallment(
@@ -56,6 +46,8 @@ public ResponseEntity<BookingPaymentDto> addinstallment(
 
 
     @GetMapping("/bookings")
+    @PreAuthorize("hasRole('Admin')")
+
     public ResponseEntity<List<Booking>> getAllBookings() {
         List<Booking> bookings = bookingService.getAllBookings();
         return ResponseEntity.ok(bookings);

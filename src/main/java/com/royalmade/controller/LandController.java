@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class LandController {
 
     @Autowired
@@ -25,12 +26,7 @@ public class LandController {
     @Autowired
     private LandMapper landMapper;
 
-//    @PostMapping("/create")
-//    @PreAuthorize("hasRole('Admin')")
-//    public ResponseEntity<Land> createLand(@RequestBody LandDto landRequestDto) {
-//        Land createdLand = landService.createLand(landRequestDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(null);
-//    }
+
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('Admin')")
@@ -81,12 +77,7 @@ public class LandController {
     }
 
 
-//    @PutMapping("/update/{id}")
-//    @PreAuthorize("hasRole('Admin')")
-//    public ResponseEntity<Land> updateLand(@PathVariable Long id, @RequestBody LandRequestDto landRequestDto) {
-//        Land updatedLand = landService.updateLand(id, landRequestDto);
-//        return ResponseEntity.status(HttpStatus.OK).body(updatedLand);
-//    }
+
 
 
     @PutMapping("/update/{id}")
@@ -149,12 +140,17 @@ public class LandController {
     public ResponseEntity<LandTransactionsResponseDto> getLandTransactions(@PathVariable Long id) {
         List<PartnerWithTransactionsDto> partners = landService.getPartnerTransactions(id);
         PurchaserWithTransactionsDto purchaser = landService.getPurchaserTransaction(id);
-
         LandTransactionsResponseDto response = new LandTransactionsResponseDto();
         response.setPartners(partners);
         response.setPurchaser(purchaser);
-
         return ResponseEntity.ok(response);
     }
 
+
+    @PostMapping("/{landId}/partners")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Land> addPartnerToLand(@PathVariable Long landId, @RequestBody PartnerDto partnerDto) {
+        Land updatedLand = landService.addPartnerToLand(landId, partnerDto);
+        return ResponseEntity.ok(updatedLand);
+    }
 }

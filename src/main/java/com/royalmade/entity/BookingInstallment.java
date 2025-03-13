@@ -21,10 +21,9 @@ public class BookingInstallment {
     @Enumerated(EnumType.STRING)
     @Column(name = "installment_status")
     private InstallmentStatus installmentStatus;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JsonIgnoreProperties(value = { "bookingInstallment" }, allowSetters = true)
-//    private Booking booking;
 
+    @Column(name = "remark")
+    private String remark;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id")
     @JsonIgnoreProperties(value = { "bookingInstallments" }, allowSetters = true)
@@ -60,6 +59,15 @@ public class BookingInstallment {
 
     public void setInstallmentStatus(InstallmentStatus installmentStatus) {
         this.installmentStatus = installmentStatus;
+    }
+
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public Booking getBooking() {
