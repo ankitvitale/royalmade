@@ -3,6 +3,7 @@ package com.royalmade.dto;
 import com.royalmade.entity.Address;
 import com.royalmade.entity.Partner;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 public class LandDto {
@@ -12,6 +13,8 @@ public class LandDto {
     private Double agreementAmount;
     private Double totalAmount;
     private Double soldAmount;
+
+    private LocalDate landAddOnDate;
     private AddressResponseDto address;
     private PurchaserDto purchaser; // Replaced "person" with "purchaser"
     private OwnerDto owner;
@@ -34,6 +37,14 @@ public class LandDto {
 
     public Double getSoldAmount() { return soldAmount; }
     public void setSoldAmount(Double soldAmount) { this.soldAmount = soldAmount; }
+
+    public LocalDate getLandAddOnDate() {
+        return landAddOnDate;
+    }
+
+    public void setLandAddOnDate(LocalDate landAddOnDate) {
+        this.landAddOnDate = landAddOnDate;
+    }
 
     public AddressResponseDto getAddress() { return address; }
     public void setAddress(AddressResponseDto address) { this.address = address; }

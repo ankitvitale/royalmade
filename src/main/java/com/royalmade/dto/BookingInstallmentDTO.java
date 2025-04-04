@@ -11,6 +11,15 @@ public class BookingInstallmentDTO {
     private String remark;
     private InstallmentStatus installmentStatus;
 
+    public BookingInstallmentDTO(){}
+    public BookingInstallmentDTO(Long id, LocalDate installmentDate, Double installmentAmount, String remark, InstallmentStatus installmentStatus) {
+        this.id = id;
+        this.installmentDate = installmentDate;
+        this.installmentAmount = installmentAmount;
+        this.remark = remark;
+        this.installmentStatus = installmentStatus;
+    }
+
     public Long getId() {
         return id;
     }

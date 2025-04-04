@@ -16,9 +16,7 @@ public abstract class ProjectMapper {
   //  public abstract Project toProject(ProjectRequestDto projectRequestDto);
     public abstract Project toProject(ProjectRequestDto projectRequestDto);
 
-
-
-public abstract ProjectResponseDto toProjectResponseDto(Project project);
+    public abstract ProjectResponseDto toProjectResponseDto(Project project);
 
 
 

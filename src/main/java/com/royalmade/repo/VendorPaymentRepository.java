@@ -1,5 +1,6 @@
 package com.royalmade.repo;
 
+import com.royalmade.dto.PaymentDTO;
 import com.royalmade.entity.Vendor;
 import com.royalmade.entity.VendorPayment;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,12 @@ public interface VendorPaymentRepository extends JpaRepository<VendorPayment, Lo
   //  List<VendorPayment> findByVendorIdAndProjectIdAndBillNo(Long vendorId, Long projectId, String billNo);
     List<VendorPayment> findByVendorIdAndProjectIdAndBillNo(Long vendorId, Long projectId, Double billNo);
 
+    @Query("SELECT new com.royalmade.dto.PaymentDTO(p.id, p.payDate, p.amount, p.remark, p.paymentStatus) " +
+            "FROM VendorPayment p WHERE p.material.id = :materialId")
+    List<PaymentDTO> findPaymentsByMaterialId(@Param("materialId") Long materialId);
+
+    List<VendorPayment> findByBillNoAndProjectId(Double aDouble, Long projectId);
+
+
+    // List<VendorPayment> findByBillNo(String billNo);
 }

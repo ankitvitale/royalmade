@@ -10,7 +10,7 @@ public class PaymentDTO {
     private double amount;
     private String remark;
     private ExpensePayStatus paymentStatus;
-
+    public PaymentDTO(){}
     public PaymentDTO(Long id, LocalDate payDate, double amount, String remark, ExpensePayStatus paymentStatus) {
         this.id = id;
         this.payDate = payDate;

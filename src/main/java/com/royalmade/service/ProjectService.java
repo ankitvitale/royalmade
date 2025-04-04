@@ -61,7 +61,12 @@ public class ProjectService {
                 .map(projectMapper::toProjectResponseDto)
                 .collect(Collectors.toList());
     }
-
+    public List<ProjectResponseDto> getAllProjectShow() {
+        List<Project> projects = projectRepository.findAll();
+        return projects.stream()
+                .map(projectMapper::toProjectResponseDto)
+                .collect(Collectors.toList());
+    }
     public ProjectResponseDto getProjectById(Long id) {
         Project project = projectRepository.findById(id)
                 .orElse(null); // You can throw an exception here if you prefer
@@ -94,7 +99,6 @@ public class ProjectService {
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + id));
         // Delete related entries from residency
         projectRepository.deleteResidenciesByProjectId(id);
-
         // Delete related entries from expense_installment
         projectRepository.deleteExpenseInstallmentsByProjectId(id);
         projectRepository.deleteExpensesByProjectId(id);

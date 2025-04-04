@@ -19,7 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -56,6 +59,32 @@ private static final Logger logger = LoggerFactory.getLogger(ContractorControlle
             @RequestBody List<ContractorInstallmentDto> contractorInstallments) {
         Contractor updatedContractor = contractorService.addContractorInstallment(id, contractorInstallments);
         return ResponseEntity.ok(updatedContractor);
+    }
+
+    @PostMapping("/{id}/updatCeontractorInstallment")
+    @PreAuthorize("hasAnyRole('Admin')")
+    public ResponseEntity<Contractor> updateOrAddContractorInstallment(@PathVariable Long id, @RequestBody List<ContractorInstallmentDto> contractorInstallments){
+        Contractor updateContractorInstallment=contractorService.updateOrAddContractorInstallment(id,contractorInstallments);
+        return ResponseEntity.ok(updateContractorInstallment);
+    }
+    @GetMapping("/getSingleInstallmentById/{id}")
+    @PreAuthorize("hasAnyRole('Admin')")
+    public ResponseEntity<ContractorInstallment> getContractorInstallmentById(@PathVariable Long id){
+        ContractorInstallment contractorInstallment=contractorService.getContractorInstallmentById(id);
+        return   ResponseEntity.ok(contractorInstallment);
+    }
+    @PutMapping("/updateContractorInstallment/{contractorId}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Contractor> updateContractorInstallments(
+            @PathVariable Long contractorId,
+            @RequestBody List<ContractorInstallmentDto> contractorInstallments) {
+        return ResponseEntity.ok(contractorService.updateContractorInstallments(contractorId, contractorInstallments));
+    }
+    @DeleteMapping("/deleteContractorInstallment/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Map<String, String>> deleteContractorInstallment(@PathVariable Long id) {
+        contractorService.deleteContractorInstallment(id);
+        return ResponseEntity.ok(Collections.singletonMap("message", "Deleted successfully"));
     }
 
 

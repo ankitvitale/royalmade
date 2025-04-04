@@ -1,6 +1,6 @@
 package com.royalmade.service;
 
-import com.royalmade.dto.VendorPaymentDTO;
+import com.royalmade.dto.*;
 import com.royalmade.entity.Material;
 import com.royalmade.entity.Project;
 import com.royalmade.entity.Vendor;
@@ -9,9 +9,8 @@ import com.royalmade.repo.MaterialRepository;
 import com.royalmade.repo.ProjectRepository;
 import com.royalmade.repo.VendorPaymentRepository;
 import com.royalmade.repo.VendorRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -528,6 +527,248 @@ public class MeterialService {
         }
 
         return new ArrayList<>(billDetailsMap.values());
+    }
+
+    public VendorPayment getVendorSinglePaymentById(Long id) {
+            return vendorPaymentRepository.findById(id)
+                    .orElseThrow(()-> new EntityNotFoundException("Id is Not Found"));
+
+    }
+
+    public Map<String, Object> updatePayment(Double billNo, Long paymentId, VendorPaymentDTO paymentDTO) {
+        VendorPayment payment = vendorPaymentRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found with ID: " + paymentId));
+
+        if (!payment.getBillNo().equals(billNo)) {
+            throw new RuntimeException("Payment does not match the provided bill number.");
+        }
+
+        Vendor vendor = vendorRepository.findById(paymentDTO.getVendorId())
+                .orElseThrow(() -> new RuntimeException("Vendor not found with ID: " + paymentDTO.getVendorId()));
+
+        List<Material> materials = materialRepository.findByBillNo(billNo);
+        List<Material> vendorMaterials = materials.stream()
+                .filter(mat -> mat.getVendor().getId().equals(paymentDTO.getVendorId()))
+                .collect(Collectors.toList());
+
+        if (vendorMaterials.isEmpty()) {
+            throw new RuntimeException("No materials found for this vendor and bill number.");
+        }
+
+        double totalAmount = vendorMaterials.stream().mapToDouble(Material::getPrice).sum();
+
+        Project project = projectRepository.findById(paymentDTO.getProjectId())
+                .orElseThrow(() -> new RuntimeException("Project not found with ID: " + paymentDTO.getProjectId()));
+
+        payment.setPayDate(paymentDTO.getPayDate() != null ? paymentDTO.getPayDate() : LocalDate.now());
+        payment.setAmount(paymentDTO.getAmount());
+        payment.setRemark(paymentDTO.getRemark());
+        payment.setPaymentStatus(paymentDTO.getPaymentStatus());
+        payment.setProject(project);
+
+        vendorPaymentRepository.save(payment);
+
+        List<VendorPayment> payments = vendorPaymentRepository.findByVendorAndMaterial_BillNo(vendor, billNo);
+        double vendorPaidAmount = payments.stream().mapToDouble(VendorPayment::getAmount).sum();
+        double remainingAmount = totalAmount - vendorPaidAmount;
+
+        List<Map<String, Object>> materialsList = vendorMaterials.stream()
+                .map(mat -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", mat.getId());
+                    map.put("name", mat.getName());
+                    map.put("type", mat.getType());
+                    map.put("quantity", mat.getQuantity());
+                    map.put("price", mat.getPrice());
+                    map.put("addedOn", mat.getAddedOn());
+                    map.put("billNo", mat.getBillNo());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        List<Map<String, Object>> paymentDetails = payments.stream()
+                .map(pay -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("payDate", pay.getPayDate());
+                    map.put("amount", pay.getAmount());
+                    map.put("status", pay.getPaymentStatus().toString());
+                    map.put("remark", pay.getRemark());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        return Map.of(
+                "vendor", Map.of("id", vendor.getId(), "name", vendor.getName(), "phoneno", vendor.getPhoneNo()),
+                "materials", materialsList,
+                "total", totalAmount,
+                "vendorPaidAmount", vendorPaidAmount,
+                "remainingAmount", remainingAmount,
+                "payment", paymentDetails
+        );
+    }
+
+
+    public Map<String, Object> deletePayment(Double billNo, Long paymentId) {
+        VendorPayment payment = vendorPaymentRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found with ID: " + paymentId));
+
+        if (!payment.getBillNo().equals(billNo)) {
+            throw new RuntimeException("Payment does not match the provided bill number.");
+        }
+
+        Vendor vendor = payment.getVendor();
+
+        vendorPaymentRepository.delete(payment);
+
+        List<Material> materials = materialRepository.findByBillNo(billNo);
+        List<Material> vendorMaterials = materials.stream()
+                .filter(mat -> mat.getVendor().getId().equals(vendor.getId()))
+                .collect(Collectors.toList());
+
+        double totalAmount = vendorMaterials.stream().mapToDouble(Material::getPrice).sum();
+        List<VendorPayment> payments = vendorPaymentRepository.findByVendorAndMaterial_BillNo(vendor, billNo);
+        double vendorPaidAmount = payments.stream().mapToDouble(VendorPayment::getAmount).sum();
+        double remainingAmount = totalAmount - vendorPaidAmount;
+
+        List<Map<String, Object>> materialsList = vendorMaterials.stream()
+                .map(mat -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", mat.getId());
+                    map.put("name", mat.getName());
+                    map.put("type", mat.getType());
+                    map.put("quantity", mat.getQuantity());
+                    map.put("price", mat.getPrice());
+                    map.put("addedOn", mat.getAddedOn());
+                    map.put("billNo", mat.getBillNo());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        List<Map<String, Object>> paymentDetails = payments.stream()
+                .map(pay -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("payDate", pay.getPayDate());
+                    map.put("amount", pay.getAmount());
+                    map.put("status", pay.getPaymentStatus().toString());
+                    map.put("remark", pay.getRemark());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        return Map.of(
+                "message", "Payment with ID " + paymentId + " has been deleted successfully.",
+                "vendor", Map.of("id", vendor.getId(), "name", vendor.getName(), "phoneno", vendor.getPhoneNo()),
+                "materials", materialsList,
+                "total", totalAmount,
+                "vendorPaidAmount", vendorPaidAmount,
+                "remainingAmount", remainingAmount,
+                "payment", paymentDetails
+        );
+    }
+
+
+
+
+
+    public List<MaterialBillResponseDTO> getFilteredMaterials(Long vendorId, Long projectId) {
+        return materialRepository.findUniqueBillNosByVendorAndProject(vendorId, projectId);
+    }
+
+
+    public List<SingleMaterialResponseDTO> getMaterialsByBillNoAndProjectIdAndVendorId(Double billNo, Long projectId, Long vendorId) {
+        List<SingleMaterialResponseDTO> materials = materialRepository.findByBillNoAndProjectIdAndVendorId(billNo, projectId, vendorId);
+
+        for (SingleMaterialResponseDTO material : materials) {
+            List<PaymentDTO> payments = vendorPaymentRepository.findPaymentsByMaterialId(material.getId()); // Fetch separately
+            material.setPayments(payments);
+        }
+        return materials;
+    }
+
+
+    public Map<String, Object> getBillDetailByBillNo(String billNo, Long projectId) {
+        List<Material> expenses = materialRepository.findByBillNoAndProjectId(Double.valueOf(billNo), projectId);
+
+        if (expenses.isEmpty()) {
+            throw new RuntimeException("No bill found for the given bill number and project.");
+        }
+
+        Material firstExpense = expenses.get(0);
+        Vendor vendor = firstExpense.getVendor();
+
+        List<VendorPayment> payments = vendorPaymentRepository.findByBillNoAndProjectId(Double.valueOf(billNo), projectId);
+
+        Map<String, Object> billDetails = new HashMap<>();
+        billDetails.put("billNo", billNo);
+        billDetails.put("vendor", Map.of("name", vendor.getName(), "phoneno", vendor.getPhoneNo()));
+        billDetails.put("materials", new ArrayList<Map<String, Object>>());
+        billDetails.put("total", 0.0);
+        billDetails.put("vendorPaidAmount", 0.0);
+        billDetails.put("remainingAmount", 0.0);
+        billDetails.put("payment", new ArrayList<Map<String, Object>>());
+
+        double total = 0.0;
+        List<Map<String, Object>> materials = (List<Map<String, Object>>) billDetails.get("materials");
+
+        for (Material exp : expenses) {
+            Map<String, Object> material = new HashMap<>();
+            material.put("id", exp.getId());
+            material.put("name", exp.getName());
+            material.put("type", exp.getType());
+            material.put("quantity", exp.getQuantity());
+            material.put("price", exp.getPrice());
+            material.put("addedOn", exp.getAddedOn());
+            material.put("billNo", billNo);
+            materials.add(material);
+            total += exp.getPrice();
+        }
+
+        billDetails.put("total", total);
+        double vendorPaidAmount = payments.stream().mapToDouble(VendorPayment::getAmount).sum();
+        double remainingAmount = total - vendorPaidAmount;
+
+        List<Map<String, Object>> paymentDetails = new ArrayList<>();
+        for (VendorPayment payment : payments) {
+            Map<String, Object> paymentInfo = new HashMap<>();
+            paymentInfo.put("id",payment.getId());
+            paymentInfo.put("expensePayDate", payment.getPayDate());
+            paymentInfo.put("expenseAmount", payment.getAmount());
+            paymentInfo.put("expensePayStatus", payment.getPaymentStatus().toString());
+            paymentInfo.put("remark", payment.getRemark());
+            paymentDetails.add(paymentInfo);
+        }
+
+        billDetails.put("vendorPaidAmount", vendorPaidAmount);
+        billDetails.put("remainingAmount", remainingAmount);
+        billDetails.put("payment", paymentDetails);
+
+        return billDetails;
+    }
+
+    //update materials
+    public Map<String, Object> updateMaterial(Long materialId, MaterialDTO materialDTO) {
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new RuntimeException("Material not found with ID: " + materialId));
+
+        material.setName(materialDTO.getName());
+        material.setType(materialDTO.getType());
+        material.setQuantity(materialDTO.getQuantity());
+        material.setPrice(materialDTO.getPrice());
+        material.setAddedOn(materialDTO.getAddedOn());
+
+        materialRepository.save(material);
+
+        return Map.of(
+                "message", "Material updated successfully",
+                "material", Map.of(
+                        "id", material.getId(),
+                        "name", material.getName(),
+                        "type", material.getType(),
+                        "quantity", material.getQuantity(),
+                        "price", material.getPrice(),
+                        "addedOn", material.getAddedOn()
+                )
+        );
     }
 
 }

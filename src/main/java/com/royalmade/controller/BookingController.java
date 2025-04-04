@@ -39,7 +39,6 @@ public class BookingController {
 public ResponseEntity<BookingPaymentDto> addinstallment(
         @PathVariable Long id,
         @RequestBody List<BookingInstallmentDTO> bookingInstallmentDtos) {
-
     BookingPaymentDto addInstallment = bookingService.addInstallment(id, bookingInstallmentDtos);
     return ResponseEntity.ok(addInstallment);
 }
@@ -92,6 +91,27 @@ public ResponseEntity<BookingPaymentDto> addinstallment(
         Booking cancelledBooking = bookingService.cancelFlatBooking(id);
         return ResponseEntity.ok(cancelledBooking);
     }
+    @PutMapping("/updateBookingInstallment/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<BookingInstallment> updateBookinfInstallment(
+            @PathVariable Long id,
+            @RequestBody BookingInstallmentDTO bookingInstallmentDTO){
+        BookingInstallment bookingInstallment=bookingService.updateBookingInstallment(id,bookingInstallmentDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(bookingInstallment);
 
+    }
+     @DeleteMapping("/deleteBookingInstallment/{id}")
+     @PreAuthorize("hasRole('Admin')")
+     public ResponseEntity<?> deleteBookingInstallment(@PathVariable Long id){
+        bookingService.deleteBookingInstallment(id);
+        return ResponseEntity.status(HttpStatus.OK).body("BookingInstallment with ID " + id + " has been deleted successfully");
+
+    }
+     @GetMapping("/getBookingInstallmentById/{id}")
+     @PreAuthorize("hasRole('Admin')")
+     public ResponseEntity<BookingInstallmentDTO> getBookingInstallmentById(@PathVariable Long id){
+         BookingInstallmentDTO bookingInstallment= bookingService.getBookingInstallmentById(id);
+        return ResponseEntity.ok(bookingInstallment);
+     }
 
 }

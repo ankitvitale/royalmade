@@ -117,6 +117,7 @@ public class LandService {
         land.setTokenAmount(landRequestDto.getTokenAmount());
         land.setAgreementAmount(landRequestDto.getAgreementAmount());
         land.setTotalAmount(landRequestDto.getTotalAmount());
+        land.setLandAddOnDate(landRequestDto.getLandAddOnDate());
         land.setAddress(address);
         land.setOwner(owner); // Assign saved owner
         land.setPurchaser(purchaser); // Assign saved purchaser
@@ -128,7 +129,6 @@ public class LandService {
 
         return savedLand;
     }
-
 
 
 
@@ -190,13 +190,28 @@ public class LandService {
         if (landRequestDto.getPartners() != null) {
             partnerRepository.deleteAll(existingLand.getPartners());
             Set<Partner> updatedPartners = landRequestDto.getPartners().stream()
+//                    .map(partnerDto -> {
+//                        Partner partner = new Partner();
+//                        partner.setName(partnerDto.getName());
+//                        partner.setCity(partnerDto.getCity());
+//                        partner.setPhoneNumber(partnerDto.getPhoneNumber());
+//                        partner.setAmount(partnerDto.getAmount());
+//                        partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
+//                        return partner;
+
                     .map(partnerDto -> {
                         Partner partner = new Partner();
                         partner.setName(partnerDto.getName());
                         partner.setCity(partnerDto.getCity());
                         partner.setPhoneNumber(partnerDto.getPhoneNumber());
                         partner.setAmount(partnerDto.getAmount());
-                        partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
+
+                        if (partnerDto.getPaymentDate() != null && !partnerDto.getPaymentDate().isEmpty()) {
+                            partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
+                        } else {
+                            partner.setPaymentDate(null); // Handle missing date gracefully
+                        }
+
                         return partner;
                     })
                     .collect(Collectors.toSet());
@@ -215,6 +230,7 @@ public class LandService {
         existingLand.setTokenAmount(landRequestDto.getTokenAmount());
         existingLand.setAgreementAmount(landRequestDto.getAgreementAmount());
         existingLand.setTotalAmount(landRequestDto.getTotalAmount());
+        existingLand.setLandAddOnDate(landRequestDto.getLandAddOnDate());
         existingLand.setAddress(address);
         existingLand.setOwner(owner);
         existingLand.setPurchaser(purchaser);
@@ -749,7 +765,7 @@ public class LandService {
         partner.setCity(partnerDto.getCity());
         partner.setPhoneNumber(partnerDto.getPhoneNumber());
       //  partner.setAmount(partnerDto.getAmount());
-   //    partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
+//       partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
         partner.setLand(land);
 
         partnerRepository.save(partner);
@@ -759,5 +775,36 @@ public class LandService {
 
         logger.info("Partner added successfully to land ID: {}", landId);
         return land;
+    }
+
+    public LandTransaction updatePayment(LandTransactionDto landTransactionDto, Long transactionId) {
+        LandTransaction landTransaction = landTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        landTransaction.setTransactionDate(landTransactionDto.getTransactionDate());
+        landTransaction.setTransactionAmount(landTransactionDto.getTransactionAmount());
+        landTransaction.setNote(landTransactionDto.getNote());
+        landTransaction.setChange(landTransactionDto.getChange());
+        landTransaction.setMadeBy(landTransactionDto.getMadeBy());
+        landTransaction.setStatus(landTransactionDto.getStatus());
+
+        return landTransactionRepository.save(landTransaction);
+    }
+
+    public LandTransactionDto getPartnerTransactionWithId(Long id) {
+        LandTransaction transaction = landTransactionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Land Transaction not found with ID: " + id));
+
+        LandTransactionDto txDto = new LandTransactionDto();
+        txDto.setId(transaction.getId());
+        txDto.setTransactionDate(transaction.getTransactionDate());
+        txDto.setTransactionAmount(transaction.getTransactionAmount());
+        txDto.setNote(transaction.getNote());
+        txDto.setChange(transaction.getChange());
+        txDto.setMadeBy(transaction.getMadeBy());
+        txDto.setStatus(transaction.getStatus());
+
+        return txDto;
+
     }
 }

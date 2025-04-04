@@ -68,6 +68,31 @@ public class ProjectController {
         }
     }
 
+    // new Api forgetAll project show
+    @GetMapping("/getAllProjectShow")
+    @PreAuthorize("hasAnyRole('Admin','AppUser')")
+    public ResponseEntity<List<?>> getProjectShow(Authentication authentication) {
+        String email = authentication.getName();
+        List<?> projects;
+
+        // Check if the logged-in user is an Admin
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_Admin"));
+
+        if (isAdmin) {
+            // Admin gets all projects
+            projects = projectService.getAllProjectShow();
+        } else {
+            // AppUser gets only allowed sites
+            projects = userService.getAllowedSitesForUserShow(email);
+        }
+
+        if (!projects.isEmpty()) {
+            return ResponseEntity.ok(projects);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+    }
 
 
 

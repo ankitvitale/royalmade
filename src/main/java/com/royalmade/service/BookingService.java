@@ -409,4 +409,35 @@ public class BookingService {
         return new BookingPaymentDto(booking);
     }
 
+    public BookingInstallment updateBookingInstallment(Long id, BookingInstallmentDTO bookingInstallmentDTO) {
+        BookingInstallment bookingInstallment=bookingInstallmentRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("BookingInstallment"+id+"Id Not Found"));
+
+            bookingInstallment.setInstallmentDate(bookingInstallmentDTO.getInstallmentDate());
+            bookingInstallment.setInstallmentAmount(bookingInstallmentDTO.getInstallmentAmount());
+            bookingInstallment.setRemark(bookingInstallmentDTO.getRemark());
+            bookingInstallment.setInstallmentStatus(bookingInstallmentDTO.getInstallmentStatus());
+            return bookingInstallmentRepository.save(bookingInstallment);
+    }
+
+    public void deleteBookingInstallment(Long id) {
+        BookingInstallment bookingInstallment=bookingInstallmentRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("BookingInstallment"+id+"Id Not Found"));
+        bookingInstallmentRepository.delete(bookingInstallment);
+    }
+
+    public BookingInstallmentDTO getBookingInstallmentById(Long id) {
+        BookingInstallment bookingInstallment = bookingInstallmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("This Booking ID is not found"));
+
+        BookingInstallmentDTO dto = new BookingInstallmentDTO();
+        dto.setId(bookingInstallment.getId());
+        dto.setInstallmentAmount(bookingInstallment.getInstallmentAmount());
+        dto.setInstallmentDate(bookingInstallment.getInstallmentDate());
+        dto.setInstallmentStatus(bookingInstallment.getInstallmentStatus());
+        dto.setRemark(bookingInstallment.getRemark());
+
+        return dto;
+    }
+
 }

@@ -182,7 +182,14 @@ public class UserService {
 				.map(site -> modelMapper.map(site, ExpenceProjectDto.class))
 				.collect(Collectors.toList());
 	}
+	public List<ExpenceProjectDto> getAllowedSitesForUserShow(String email) {
+		AppUser user = appUserRepository.findByEmail(email);
 
+		// Map the allowed sites to DTOs
+		return user.getAllowedSite().stream()
+				.map(site -> modelMapper.map(site, ExpenceProjectDto.class))
+				.collect(Collectors.toList());
+	}
 	public List<AppUserDTO> getAllSupervisors() {
 		List<AppUser> users = appUserRepository.findAll();
 		return users.stream().map(this::convertToDTO).collect(Collectors.toList());

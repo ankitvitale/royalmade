@@ -14,7 +14,6 @@ public class RelievingLatterService {
     @Autowired
     private RelievingLatterRepository relievingLatterRepository;
     public RelievingLatter createRelievinglatter(RelievingLatter relievingLatter) {
-
         return relievingLatterRepository.save(relievingLatter);
     }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,9 @@ public class Land implements Serializable {
 
     @Column(name = "total_amount")
     private Double totalAmount;
+
+    @Column(name = "landAddOn_date")
+    private LocalDate landAddOnDate;
 
     @JsonIgnoreProperties(value = { "land" }, allowSetters = true)
     @OneToOne(cascade = CascadeType.ALL)
@@ -127,6 +131,15 @@ public class Land implements Serializable {
 
     public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+
+    public LocalDate getLandAddOnDate() {
+        return landAddOnDate;
+    }
+
+    public void setLandAddOnDate(LocalDate landAddOnDate) {
+        this.landAddOnDate = landAddOnDate;
     }
 
     public Address getAddress() {

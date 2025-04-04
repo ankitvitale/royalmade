@@ -153,4 +153,20 @@ public class LandController {
         Land updatedLand = landService.addPartnerToLand(landId, partnerDto);
         return ResponseEntity.ok(updatedLand);
     }
+
+    //update partener payment
+    @PutMapping("/UpdatePartner/payment/{transactionId}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<LandTransaction> updatePayment(@RequestBody LandTransactionDto landTransactionDto, @PathVariable Long transactionId) {
+        LandTransaction updatedTransaction = landService.updatePayment(landTransactionDto, transactionId);
+        return ResponseEntity.ok(updatedTransaction);
+    }
+
+    // show the single Partner payment with single transation
+    @GetMapping("/SinglePartnerPaymentById/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<LandTransactionDto> getPartnerTransactionWithId(@PathVariable Long id){
+        LandTransactionDto partnerWithTransactionsDto=landService.getPartnerTransactionWithId(id);
+        return ResponseEntity.ok(partnerWithTransactionsDto);
+    }
 }

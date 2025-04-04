@@ -185,6 +185,12 @@ public class ContractorService {
         Contractor contractor = contractorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Contractor ID " + id + " Not Found"));
 
+        double totalPaid = contractor.getContractorInstallments().stream()
+                .mapToDouble(ContractorInstallment::getAmount).sum();
+        contractor.setContractorPaidAmount(totalPaid);
+        contractor.setReamingAmount(contractor.getTotal() - totalPaid);
+        contractorRepository.save(contractor);
+
         List<ContractorInstallmentDto> installmentDtos = contractor.getContractorInstallments().stream()
                 .map(installment -> new ContractorInstallmentDto(
                         installment.getId(),
@@ -224,4 +230,93 @@ public List<AllContractorResponseDto> getContractorByProject(Long projectId) {
      contractorRepository.deleteById(id);
      return contractor;
     }
+
+    public Contractor updateOrAddContractorInstallment(Long id, List<ContractorInstallmentDto> contractorInstallments) {
+        Contractor contractor = contractorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Contractor ID not found"));
+
+        List<ContractorInstallment> installments = new ArrayList<>();
+
+        for (ContractorInstallmentDto installmentDto : contractorInstallments) {
+            ContractorInstallment installment;
+
+            if (installmentDto.getId() != null) {
+                installment = contractorInstallmentRepository.findById(installmentDto.getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Installment ID not found"));
+            } else {
+                installment = new ContractorInstallment();
+                installment.setContractor(contractor);
+            }
+
+            installment.setContractorPayDate(installmentDto.getContractorPayDate());
+            installment.setAmount(installmentDto.getAmount());
+            installment.setRemark(installmentDto.getRemark());
+            installment.setContractorPayStatus(installmentDto.getContractorPayStatus());
+
+            installments.add(installment);
+        }
+
+        contractorInstallmentRepository.saveAll(installments);
+
+        List<ContractorInstallment> installmentList = contractorInstallmentRepository.findByContractorId(id);
+        double totalPaid = 0.0;
+
+        for (ContractorInstallment installment : installmentList) {
+            if (installment.getAmount() != null) {
+                totalPaid += installment.getAmount();
+            }
+        }
+
+        contractor.setContractorPaidAmount(totalPaid);
+        contractor.setReamingAmount(contractor.getTotal() - totalPaid);
+
+        return contractorRepository.save(contractor);
+    }
+
+
+    public Contractor updateContractorInstallments(Long contractorId, List<ContractorInstallmentDto> contractorInstallments) {
+        Contractor contractor = contractorRepository.findById(contractorId)
+                .orElseThrow(() -> new EntityNotFoundException("Contractor ID not found"));
+
+        List<ContractorInstallment> installments = new ArrayList<>();
+
+        for (ContractorInstallmentDto installmentDto : contractorInstallments) {
+            if (installmentDto.getId() == null) {
+                throw new IllegalArgumentException("Installment ID is required for update");
+            }
+
+            ContractorInstallment installment = contractorInstallmentRepository.findById(installmentDto.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Installment ID not found"));
+
+            installment.setContractorPayDate(installmentDto.getContractorPayDate());
+            installment.setAmount(installmentDto.getAmount());
+            installment.setRemark(installmentDto.getRemark());
+            installment.setContractorPayStatus(installmentDto.getContractorPayStatus());
+
+            installments.add(installment);
+        }
+
+        contractorInstallmentRepository.saveAll(installments);
+
+        double totalPaid = contractorInstallmentRepository.findByContractorId(contractorId)
+                .stream().mapToDouble(ContractorInstallment::getAmount).sum();
+
+        contractor.setContractorPaidAmount(totalPaid);
+        contractor.setReamingAmount(contractor.getTotal() - totalPaid);
+
+        return contractorRepository.save(contractor);
+    }
+
+    public ContractorInstallment getContractorInstallmentById(Long id) {
+        return contractorInstallmentRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("Installment Id Is not found"));
+    }
+
+    public ContractorInstallment deleteContractorInstallment(Long id) {
+        ContractorInstallment contractorInstallment = contractorInstallmentRepository.findById(id)
+        .orElseThrow(()-> new EntityNotFoundException("Installment Id not found"));
+         contractorInstallmentRepository.deleteById(id);
+         return contractorInstallment;
+    }
 }
+
