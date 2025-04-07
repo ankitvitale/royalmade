@@ -77,9 +77,6 @@ public class LandController {
     }
 
 
-
-
-
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Land> updateLand(@PathVariable Long id, @RequestBody LandDto landRequestDto) {

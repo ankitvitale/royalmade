@@ -26,11 +26,17 @@ public abstract class LandMapper {
   @Mapping(source = "partners", target = "partners")
   public abstract  Land toLand(LandRequestDto landRequestDto);
 
-    @Mapping(target = "soldAmount", expression = "java(" +
-            "land.getTotalAmount() + 1000 - (land.getAgreementAmount() + land.getTokenAmount())" +
-            ")")
-    public abstract LandResponseDto toLandResponseDto( Land land);
+//    @Mapping(target = "soldAmount", expression = "java(" +
+//            "land.getTotalAmount() + 1000 - (land.getAgreementAmount() + land.getTokenAmount())" +
+//            ")")
+//    public abstract LandResponseDto toLandResponseDto( Land land);
 
+    @Mapping(target = "soldAmount", expression = "java(" +
+            "(land.getTotalAmount() != null ? land.getTotalAmount() : 0.0) + 1000 - " +
+            "((land.getAgreementAmount() != null ? land.getAgreementAmount() : 0.0) + " +
+            "(land.getTokenAmount() != null ? land.getTokenAmount() : 0.0))" +
+            ")")
+    public abstract LandResponseDto toLandResponseDto(Land land);
 
     public abstract  List<PartnerDto> toPartnerResponseDtos(Set<Partner> partners);
 }
