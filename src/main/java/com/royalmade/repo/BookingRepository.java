@@ -16,4 +16,6 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
     );
 
 
+
+    Booking findBycustomer_id(Long id);
 }

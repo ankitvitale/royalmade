@@ -39,6 +39,11 @@ public class PossessionLetterService {
         existingPossessionLetter.setFlatNo(updatedPossessionLetter.getFlatNo());
         existingPossessionLetter.setResidencyName(updatedPossessionLetter.getResidencyName());
         existingPossessionLetter.setAddress(updatedPossessionLetter.getAddress());
+        // If updated date is provided, set it; else keep old one
+        if (updatedPossessionLetter.getDate() != null) {
+            existingPossessionLetter.setDate(updatedPossessionLetter.getDate());
+        }
+
 
         return possessionRepository.save(existingPossessionLetter);
     }

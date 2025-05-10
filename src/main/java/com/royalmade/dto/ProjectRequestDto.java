@@ -13,6 +13,9 @@ public class ProjectRequestDto {
 
     private String buildingSize;
 
+    private String area;
+
+    private String facing;
     private ProjectStatus status;
    private Long landId; // Reference to Land by ID
 
@@ -48,6 +51,22 @@ public class ProjectRequestDto {
 
     public void setBuildingSize(String buildingSize) {
         this.buildingSize = buildingSize;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getFacing() {
+        return facing;
+    }
+
+    public void setFacing(String facing) {
+        this.facing = facing;
     }
 
     public ProjectStatus getStatus() {

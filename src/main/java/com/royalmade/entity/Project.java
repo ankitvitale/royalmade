@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.royalmade.entity.enumeration.ProjectStatus;
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -38,6 +40,11 @@ public class Project implements Serializable {
     @Column(name = "buildingSize")
     private String buildingSize;
 
+    @Column(name = "area")
+    private String area;
+    @Column(name = "facing")
+    private String facing;
+
     @JsonIgnoreProperties(value = { "address", "owner", "purchaser", "partners", "project" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
@@ -68,6 +75,10 @@ public class Project implements Serializable {
     private AppUser appUser;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+    // Optional: Bidirectional mapping
+//    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+//    private List<Vendor> vendors = new ArrayList<>();
 
     public Long getId() {
         return this.id;
@@ -137,44 +148,21 @@ public class Project implements Serializable {
         this.buildingSize = buildingSize;
     }
 
-//    public Set<Expense> getExpenses() {
-//        return this.expenses;
-//    }
-//
-//    public void setExpenses(Set<Expense> expenses) {
-//        if (this.expenses != null) {
-//            this.expenses.forEach(i -> i.setProject(null));
-//        }
-//        if (expenses != null) {
-//            expenses.forEach(i -> i.setProject(this));
-//        }
-//        this.expenses = expenses;
-//    }
-//
-//    public Project expenses(Set<Expense> expenses) {
-//        this.setExpenses(expenses);
-//        return this;
-//    }
-//
-//    public Project addExpense(Expense expense) {
-//        this.expenses.add(expense);
-//        expense.setProject(this);
-//        return this;
-//    }
+    public String getArea() {
+        return area;
+    }
 
-//    public Set<Contractor> getContractors() {
-//        return contractors;
-//    }
-//
-//    public void setContractors(Set<Contractor> contractors) {
-//        this.contractors = contractors;
-//    }
+    public void setArea(String area) {
+        this.area = area;
+    }
 
-//    public Project removeExpense(Expense expense) {
-//        this.expenses.remove(expense);
-//        expense.setProject(null);
-//        return this;
-//    }
+    public String getFacing() {
+        return facing;
+    }
+
+    public void setFacing(String facing) {
+        this.facing = facing;
+    }
 
     public Set<Residency> getResidencies() {
         return this.residencies;
@@ -215,6 +203,14 @@ public class Project implements Serializable {
         this.appUser = appUser;
     }
 // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+
+//    public List<Vendor> getVendors() {
+//        return vendors;
+//    }
+//
+//    public void setVendors(List<Vendor> vendors) {
+//        this.vendors = vendors;
+//    }
 
     @Override
     public boolean equals(Object o) {

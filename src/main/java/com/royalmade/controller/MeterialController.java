@@ -53,8 +53,8 @@ public class MeterialController {
 
     @PostMapping("/addVendor")
     @PreAuthorize("hasAnyRole('Admin')")
-    public Vendor addVendor(@RequestBody Vendor vendor){
-        return meterialService.addVendors(vendor);
+    public Vendor addVendor(@RequestBody VendorResponseDTO vendordto){
+        return meterialService.addVendors(vendordto);
     }
 
     @GetMapping("/AllVendor")
@@ -67,6 +67,18 @@ public class MeterialController {
     @PreAuthorize("hasAnyRole('Admin','AppUser')")
     public ResponseEntity<Vendor> getVendorByID(@PathVariable Long id){
         return meterialService.getVendorById(id);
+    }
+//    @GetMapping("/vendor-byProjectId/{projectId}")
+//    @PreAuthorize("hasAnyRole('Admin','AppUser')")
+//    public ResponseEntity<Vendor> getVendorByprojectId(@PathVariable Long projectId){
+//        return meterialService.getVendorByprojectId(projectId);
+//
+//    }
+
+    @GetMapping("/vendor-byProjectId/{projectId}")
+    @PreAuthorize("hasAnyRole('Admin','AppUser')")
+    public ResponseEntity<List<Vendor>> getVendorsByProjectId(@PathVariable Long projectId) {
+        return meterialService.getVendorsByProjectId(projectId);
     }
     @DeleteMapping("/deleteVendor/{id}")
     @PreAuthorize("hasRole('Admin')")
@@ -185,6 +197,24 @@ public class MeterialController {
                     .body(Map.of("error", "Failed to delete material."));
         }
     }
+
+    @PostMapping("/material/add-payment")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Map<String, Object>> addPaymentByVendorAndProject(
+            @RequestParam Long vendorId,
+            @RequestParam Long projectId,
+            @RequestBody VendorPaymentDTO paymentDTO) {
+
+        try {
+            Map<String, Object> response = meterialService.addPaymentByVendorAndProject(vendorId, projectId, paymentDTO);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Internal server error"));
+        }
+    }
+
 
 
     @DeleteMapping("/material/{materialId}")

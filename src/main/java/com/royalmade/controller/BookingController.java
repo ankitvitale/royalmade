@@ -34,7 +34,10 @@ public class BookingController {
 
     }
 
-@PostMapping("/{id}/addInstallment")
+
+
+
+    @PostMapping("/{id}/addInstallment")
 @PreAuthorize("hasRole('Admin')")
 public ResponseEntity<BookingPaymentDto> addinstallment(
         @PathVariable Long id,
@@ -46,7 +49,6 @@ public ResponseEntity<BookingPaymentDto> addinstallment(
 
     @GetMapping("/bookings")
     @PreAuthorize("hasRole('Admin')")
-
     public ResponseEntity<List<Booking>> getAllBookings() {
         List<Booking> bookings = bookingService.getAllBookings();
         return ResponseEntity.ok(bookings);
@@ -85,6 +87,12 @@ public ResponseEntity<BookingPaymentDto> addinstallment(
         return ResponseEntity.status(HttpStatus.OK).body(updatedBooking);
     }
 
+    @GetMapping("/getBookingCoustomerId/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public  ResponseEntity<Booking> getBookingByCoustomerId(@PathVariable Long id){
+        Booking getBooking=bookingService.getBookingByCoustomerId(id);
+        return ResponseEntity.ok(getBooking);
+    }
     @PutMapping("/cancelBooking/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Booking> cancelFlatBooking(@PathVariable Long id) {

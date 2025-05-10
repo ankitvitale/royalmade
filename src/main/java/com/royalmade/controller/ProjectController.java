@@ -68,6 +68,17 @@ public class ProjectController {
         }
     }
 
+    @GetMapping("/getAllProjectsforApp")
+    public ResponseEntity<List<ProjectResponseDto>> getAllProjects() {
+        List<ProjectResponseDto> projects = projectService.getAllProjects();
+
+        if (!projects.isEmpty()) {
+            return ResponseEntity.ok(projects);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+    }
+
     // new Api forgetAll project show
     @GetMapping("/getAllProjectShow")
     @PreAuthorize("hasAnyRole('Admin','AppUser')")

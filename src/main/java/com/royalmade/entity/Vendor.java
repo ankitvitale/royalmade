@@ -17,6 +17,10 @@ public class Vendor {
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Material> materials;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
+
 
     public Long getId() {
         return id;
@@ -50,5 +54,11 @@ public class Vendor {
         this.materials = materials;
     }
 
+    public Project getProject() {
+        return project;
+    }
 
+    public void setProject(Project project) {
+        this.project = project;
+    }
 }

@@ -72,7 +72,6 @@ public class LandController {
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Land> getLandById(@PathVariable Long id) {
         Land lands = landService.getLandById(id);
-        ;
         return ResponseEntity.ok(lands);
     }
 

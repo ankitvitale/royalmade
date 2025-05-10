@@ -86,6 +86,10 @@ public class ProjectService {
         // Map the fields from the DTO to the Project entity
         project.setName(projectRequestDto.getName());
         project.setStatus(projectRequestDto.getStatus());
+        project.setBuildingSize(projectRequestDto.getBuildingSize());
+        project.setTotalflat(projectRequestDto.getTotalflat());
+        project.setArea(projectRequestDto.getArea());
+        project.setFacing(projectRequestDto.getFacing());
         // Save the updated project back to the repository
         Project updatedProject = projectRepository.save(project);
 

@@ -37,6 +37,8 @@ public class SecurityConfig {
             "/getProjectById/{id}",
             "/getAllland",
             "/land/{id}",
+            "/api/getAllProjectsforApp",
+            "/api/project/{projectId}"
 
     };
 

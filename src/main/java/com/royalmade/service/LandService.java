@@ -94,7 +94,18 @@ public class LandService {
                         partner.setCity(partnerDto.getCity());
                         partner.setPhoneNumber(partnerDto.getPhoneNumber());
                         partner.setAmount(partnerDto.getAmount());
-                        partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
+//                        partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
+//                        return partner;
+//                    })
+//                    .collect(Collectors.toSet());
+
+                        String paymentDate = partnerDto.getPaymentDate();
+                        if (paymentDate != null && !paymentDate.isBlank()) {
+                            partner.setPaymentDate(LocalDate.parse(paymentDate));
+                        } else {
+                            partner.setPaymentDate(null); // or throw an exception, if it's mandatory
+                        }
+
                         return partner;
                     })
                     .collect(Collectors.toSet());
@@ -190,14 +201,6 @@ public class LandService {
         if (landRequestDto.getPartners() != null) {
             partnerRepository.deleteAll(existingLand.getPartners());
             Set<Partner> updatedPartners = landRequestDto.getPartners().stream()
-//                    .map(partnerDto -> {
-//                        Partner partner = new Partner();
-//                        partner.setName(partnerDto.getName());
-//                        partner.setCity(partnerDto.getCity());
-//                        partner.setPhoneNumber(partnerDto.getPhoneNumber());
-//                        partner.setAmount(partnerDto.getAmount());
-//                        partner.setPaymentDate(LocalDate.parse(partnerDto.getPaymentDate()));
-//                        return partner;
 
                     .map(partnerDto -> {
                         Partner partner = new Partner();
