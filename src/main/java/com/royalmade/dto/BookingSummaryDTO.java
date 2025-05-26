@@ -2,7 +2,8 @@ package com.royalmade.dto;
 
 import java.util.List;
 
-public class BookingSummaryDTO {
+public class
+BookingSummaryDTO {
 
     private String customerName;
     private String residencyName;

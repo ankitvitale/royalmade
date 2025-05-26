@@ -43,7 +43,8 @@ public class ResidencyService {
         residency.setFloorNumber(residencyDto.getFloorNumber());
         residency.setIdentifier(residencyDto.getIdentifier());
         residency.setPrice(residencyDto.getPrice());
-
+        residency.setFacing(residencyDto.getFacing());
+        residency.setArea(residencyDto.getArea());
         // Fetch the Project entity using projectId
         Project project = projectRepository.findById(residencyDto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -80,6 +81,8 @@ public class ResidencyService {
         existingResidency.setFloorNumber(residencyDto.getFloorNumber());
         existingResidency.setIdentifier(residencyDto.getIdentifier());
         existingResidency.setPrice(residencyDto.getPrice());
+        existingResidency.setFacing(residencyDto.getFacing());
+        existingResidency.setArea(residencyDto.getArea());
 
         // Update project association if projectId is provided
         if (residencyDto.getProjectId() != null) {

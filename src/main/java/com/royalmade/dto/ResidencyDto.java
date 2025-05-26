@@ -3,6 +3,7 @@ package com.royalmade.dto;
 import com.royalmade.entity.enumeration.AvailabilityStatus;
 import com.royalmade.entity.enumeration.FlatType;
 import com.royalmade.entity.enumeration.ResidencyType;
+import jakarta.persistence.Column;
 
 public class ResidencyDto {
     private Long id;
@@ -15,6 +16,10 @@ public class ResidencyDto {
 
     private String identifier;
     private Double price;
+
+    private String area;
+
+    private String facing;
     private Long projectId; // Link project via ID, not entire object
 
 
@@ -80,6 +85,22 @@ public class ResidencyDto {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getFacing() {
+        return facing;
+    }
+
+    public void setFacing(String facing) {
+        this.facing = facing;
     }
 
     public Long getProjectId() {

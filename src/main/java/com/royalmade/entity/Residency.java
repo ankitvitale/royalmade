@@ -50,6 +50,11 @@ public class Residency implements Serializable {
     @Column(name = "price")
     private Double price;
 
+    @Column(name = "area")
+    private String area;
+    @Column(name = "facing")
+    private String facing;
+
     @JsonIgnoreProperties(value = { "customer", "residency" }, allowSetters = true)
     @OneToOne
     @JoinColumn(unique = true)
@@ -176,6 +181,22 @@ public class Residency implements Serializable {
     public Residency booking(Booking booking) {
         this.setBooking(booking);
         return this;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getFacing() {
+        return facing;
+    }
+
+    public void setFacing(String facing) {
+        this.facing = facing;
     }
 
     public Project getProject() {
