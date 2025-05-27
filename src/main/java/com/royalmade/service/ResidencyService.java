@@ -110,6 +110,8 @@ public class ResidencyService {
             dto.setFloorNumber(residency.getFloorNumber());
             dto.setIdentifier(residency.getIdentifier());
             dto.setPrice(residency.getPrice());
+            dto.setArea(residency.getArea());
+            dto.setFacing(residency.getFacing());
             dto.setProjectId(residency.getProject().getId());
             return dto;
         }).toList();
