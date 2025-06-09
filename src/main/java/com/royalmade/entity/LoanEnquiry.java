@@ -14,10 +14,8 @@ public class LoanEnquiry {
     private String name;
     private String email;
     private String phone;
-    private String address;
-    private String yearlyIncome;
-    private String turnover;
-    private String itrFileNo;
+    private String  extfield;
+
 
     public Long getId() {
         return id;
@@ -51,35 +49,11 @@ public class LoanEnquiry {
         this.phone = phone;
     }
 
-    public String getAddress() {
-        return address;
+    public String getExtfield() {
+        return extfield;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getYearlyIncome() {
-        return yearlyIncome;
-    }
-
-    public void setYearlyIncome(String yearlyIncome) {
-        this.yearlyIncome = yearlyIncome;
-    }
-
-    public String getTurnover() {
-        return turnover;
-    }
-
-    public void setTurnover(String turnover) {
-        this.turnover = turnover;
-    }
-
-    public String getItrFileNo() {
-        return itrFileNo;
-    }
-
-    public void setItrFileNo(String itrFileNo) {
-        this.itrFileNo = itrFileNo;
+    public void setExtfield(String extfield) {
+        this.extfield = extfield;
     }
 }
