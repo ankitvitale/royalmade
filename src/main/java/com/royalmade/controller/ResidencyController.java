@@ -48,13 +48,14 @@ public class ResidencyController {
 
     // API to get residencies by project_id as a query parameter
     @GetMapping("/project/{projectId}")
-   //@PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<List<ResidencyDto>> getResidenciesByProjectId(@PathVariable Long projectId) {
         List<ResidencyDto> residencies = (List<ResidencyDto>) residencyService.getResidenciesByProjectId(projectId);
         return ResponseEntity.ok(residencies);
     }
     //upade residency by ID
     @PutMapping("/updateresidency/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Residency> updateResidency(@PathVariable Long id, @RequestBody ResidencyDto residencyDto) {
         Residency updatedResidency = residencyService.updateResidency(id, residencyDto);
         return ResponseEntity.ok(updatedResidency);

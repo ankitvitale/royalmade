@@ -16,7 +16,7 @@ public class VendorPayment {
     private LocalDate payDate;
     private double amount;
     private String remark;
-    private Double billNo;  // Store billNo directly instead of linking to a specific material
+
 
     @Enumerated(EnumType.STRING)
     private ExpensePayStatus paymentStatus;
@@ -67,13 +67,7 @@ public class VendorPayment {
         this.remark = remark;
     }
 
-    public Double getBillNo() {
-        return billNo;
-    }
 
-    public void setBillNo(Double billNo) {
-        this.billNo = billNo;
-    }
 
     public ExpensePayStatus getPaymentStatus() {
         return paymentStatus;

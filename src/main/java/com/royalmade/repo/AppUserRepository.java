@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface AppUserRepository extends JpaRepository<AppUser ,Long> {
     AppUser findByEmail(String email);
+    AppUser findByUsername(String username);
 //    @Modifying
 //    @Transactional
 //    @Query(value = "DELETE FROM app_user_allowed_site WHERE allowed_site_id = :projectId", nativeQuery = true)

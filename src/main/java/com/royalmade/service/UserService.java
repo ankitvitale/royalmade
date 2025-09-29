@@ -190,41 +190,41 @@ public class UserService {
 				.map(site -> modelMapper.map(site, ExpenceProjectDto.class))
 				.collect(Collectors.toList());
 	}
-	public List<AppUserDTO> getAllSupervisors() {
-		List<AppUser> users = appUserRepository.findAll();
-		return users.stream().map(this::convertToDTO).collect(Collectors.toList());
-	}
+//	public List<AppUserDTO> getAllSupervisors() {
+//		List<AppUser> users = appUserRepository.findAll();
+//		return users.stream().map(this::convertToDTO).collect(Collectors.toList());
+//	}
 
-	private AppUserDTO convertToDTO(AppUser user) {
-		List<MaterialDTO> materials = user.getMaterials().stream().map(material ->
-				new MaterialDTO(
-						material.getId(),
-						material.getName(),
-						material.getType(),
-						material.getQuantity(),
-						material.getPrice(),
-						material.getAddedOn(),
-						material.getPayments().stream().map(payment ->
-								new PaymentDTO(
-										payment.getId(),
-										payment.getPayDate(),
-										payment.getAmount(),
-										payment.getRemark(),
-										payment.getPaymentStatus()
-								)
-						).collect(Collectors.toList())
-				)
-		).collect(Collectors.toList());
-
-		return new AppUserDTO(
-				user.getId(),
-				user.getUsername(),
-				user.getName(),
-				user.getEmail(),
-				user.getUserType().toString(),
-				materials
-		);
-	}
+//	private AppUserDTO convertToDTO(AppUser user) {
+//		List<MaterialDTO> materials = user.getMaterials().stream().map(material ->
+//				new MaterialDTO(
+//						material.getId(),
+//						material.getName(),
+//						material.getType(),
+//						material.getQuantity(),
+//						material.getPrice(),
+//						material.getAddedOn(),
+//						material.getPayments().stream().map(payment ->
+//								new PaymentDTO(
+//										payment.getId(),
+//										payment.getPayDate(),
+//										payment.getAmount(),
+//										payment.getRemark(),
+//										payment.getPaymentStatus()
+//								)
+//						).collect(Collectors.toList())
+//				)
+//		).collect(Collectors.toList());
+//
+//		return new AppUserDTO(
+//				user.getId(),
+//				user.getUsername(),
+//				user.getName(),
+//				user.getEmail(),
+//				user.getUserType().toString(),
+//				materials
+//		);
+//	}
 
 
 	public List<Employee> getAllEmployees() {

@@ -2,7 +2,7 @@ package com.royalmade.entity.enumeration;
 
 public enum ExpensePayStatus {
     CASH,
-    CHECK,
+    CHEQUE,
     UPI,
     RTGS,
     NEFT

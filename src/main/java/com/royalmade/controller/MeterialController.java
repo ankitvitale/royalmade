@@ -1,10 +1,9 @@
 package com.royalmade.controller;
 
 import com.royalmade.dto.*;
+import com.royalmade.dto.MeterialDto.*;
 import com.royalmade.entity.*;
-import com.royalmade.exception.ResourceNotFoundException;
 import com.royalmade.repo.*;
-import com.royalmade.security.JwtAuthenticationFilter;
 import com.royalmade.service.MeterialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,11 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.security.Principal;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -68,18 +65,18 @@ public class MeterialController {
     public ResponseEntity<Vendor> getVendorByID(@PathVariable Long id){
         return meterialService.getVendorById(id);
     }
-//    @GetMapping("/vendor-byProjectId/{projectId}")
-//    @PreAuthorize("hasAnyRole('Admin','AppUser')")
-//    public ResponseEntity<Vendor> getVendorByprojectId(@PathVariable Long projectId){
-//        return meterialService.getVendorByprojectId(projectId);
-//
-//    }
-
     @GetMapping("/vendor-byProjectId/{projectId}")
     @PreAuthorize("hasAnyRole('Admin','AppUser')")
     public ResponseEntity<List<Vendor>> getVendorsByProjectId(@PathVariable Long projectId) {
         return meterialService.getVendorsByProjectId(projectId);
     }
+
+
+    //    @GetMapping("/vendor-byProjectId/{projectId}")
+//    @PreAuthorize("hasAnyRole('Admin','AppUser')")
+//    public ResponseEntity<List<Vendor>> getVendorsByProjectId(@PathVariable Long projectId) {
+//        return meterialService.getVendorsByProjectId(projectId);
+//    }
     @DeleteMapping("/deleteVendor/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> deleteVendor(@PathVariable Long id) {
@@ -88,325 +85,128 @@ public class MeterialController {
     }
 
 
-    @PostMapping("/projects/{projectId}/{vendorId}/add-expense")
-    @PreAuthorize("hasAnyRole('Admin','AppUser')")
-    public ResponseEntity<List<Material>> addExpenses(
-            @PathVariable Long projectId,
-            @PathVariable Long vendorId,
-            @RequestBody List<MaterialRequest> materialRequests) {
-        try {
-            String email = JwtAuthenticationFilter.CURRENT_USER;
-            AppUser appUser = appUserRepository.findByEmail(email);
-            Admin admin = adminRepository.findByEmail(email);
 
-            if (appUser == null && admin == null) {
-                throw new RuntimeException("User not found");
-            }
-
-            Project project = projectRepository.findById(projectId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Project not found with ID: " + projectId));
-
-            Vendor vendor = vendorRepository.findById(vendorId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Vendor not found with ID: " + vendorId));
-
-            List<Material> materials = new ArrayList<>();
-
-            for (MaterialRequest materialRequest : materialRequests) {
-                Material material = new Material();
-                material.setName(materialRequest.getName());
-                material.setType(materialRequest.getType());
-                material.setQuantity(materialRequest.getQuantity());
-                material.setBillNo(materialRequest.getBillNo());
-                material.setPrice(materialRequest.getPrice());
-
-                double totalPrice = materialRequest.getQuantity() * materialRequest.getPrice();
-                material.setAddedOn(LocalDate.now());
-                material.setVendor(vendor);
-                material.setProject(project);  // ✅ Setting the project
-                material.setAddedBy(appUser);
-
-                materials.add(material);
-            }
-
-            List<Material> savedMaterials = materialRepository.saveAll(materials);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedMaterials);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-
-// old get all bills
-//@GetMapping("/bills/{vendorId}")
-//@PreAuthorize("hasAnyRole('Admin','AppUser')")
-//public ResponseEntity<List<Map<String, Object>>> getBillsByVendor(@PathVariable Long vendorId) {
-//    List<Map<String, Object>> billDetails = meterialService.getBillDetailsByVendor(vendorId);
-//    return ResponseEntity.ok(billDetails);
-//}
-
-  // new get All bills
-
-    @GetMapping("/bills/{vendorId}/{projectId}")
-    @PreAuthorize("hasAnyRole('Admin','AppUser')")
-    public ResponseEntity<List<Map<String, Object>>> getBillsByVendor(
-            @PathVariable Long vendorId, @PathVariable Long projectId) {
-        List<Map<String, Object>> billDetails = meterialService.getBillDetailsByVendor(vendorId, projectId);
-        return ResponseEntity.ok(billDetails);
-    }
-
-    @GetMapping("/bills/details/{billNo}")
-    @PreAuthorize("hasAnyRole('Admin','AppUser')")
-    public ResponseEntity<Map<String, Object>> getBillDetailsByBillNo(@PathVariable Double billNo) {
-        Map<String, Object> billDetails = meterialService.getBillDetailsByBillNo(billNo);
-        return ResponseEntity.ok(billDetails);
-    }
-
-  // Add payment to Material
-    @PostMapping("/Material/{billNo}/payments")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<Map<String, Object>> addPayment(
-            @PathVariable Double billNo,
-            @RequestBody VendorPaymentDTO paymentDTO) {
-        try {
-            Map<String, Object> response = meterialService.addPayment(billNo, paymentDTO);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST) // 🔴 Change 404 -> 400
-                    .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Internal server error"));
-        }
-    }
-
-    //delete Material payment
-    @DeleteMapping("/VendorMeterialPayment/{id}")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<Map<String,String>> deleteMeterialPayment(@PathVariable Long id){
-        try{
-            VendorPayment vendorPayment=vendorPaymentRepository.findById(id)
-                    .orElseThrow(()-> new ResourceNotFoundException("Vendor Payment ID :"+id+" Not found"));
-            vendorPaymentRepository.delete(vendorPayment);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Vendor Payment deleted successfully.");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to delete material."));
-        }
-    }
-
-    @PostMapping("/material/add-payment")
+    @PostMapping("/add")
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<Map<String, Object>> addPaymentByVendorAndProject(
-            @RequestParam Long vendorId,
-            @RequestParam Long projectId,
-            @RequestBody VendorPaymentDTO paymentDTO) {
-
-        try {
-            Map<String, Object> response = meterialService.addPaymentByVendorAndProject(vendorId, projectId, paymentDTO);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Internal server error"));
-        }
+    public ResponseEntity<MaterialResponse> addMaterial(
+            @RequestParam(required = false) Long vendorId,
+            @RequestParam(required = false) Long projectId,
+            @RequestBody MaterialRequest request) {
+        return ResponseEntity.ok(meterialService.addMaterial(vendorId, projectId, request));
     }
 
 
 
-    @DeleteMapping("/material/{materialId}")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<Map<String, String>> deleteMaterial(@PathVariable Long materialId) {
-        try {
-            Material material = materialRepository.findById(materialId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Material not found with ID: " + materialId));
-
-            materialRepository.delete(material);
-
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Material deleted successfully.");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to delete material."));
-        }
-    }
-
-    @GetMapping("/SingleMeteralPayment/{id}")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<VendorPayment> getVendorSinglePaymentById(@PathVariable Long id){
-        VendorPayment vendorPayment= meterialService.getVendorSinglePaymentById(id);
-        return ResponseEntity.ok(vendorPayment);
-
-    }
-
-    @PutMapping("/Material/{billNo}/payments/{paymentId}")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<Map<String, Object>> updatePayment(
-            @PathVariable Double billNo,
-            @PathVariable Long paymentId,
-            @RequestBody VendorPaymentDTO paymentDTO) {
-        try {
-            Map<String, Object> response = meterialService.updatePayment(billNo, paymentId, paymentDTO);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Internal server error"));
-        }
-    }
-
-    @DeleteMapping("/Material/{billNo}/payments/{paymentId}")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<Map<String, Object>> deletePayment(
-            @PathVariable Double billNo,
-            @PathVariable Long paymentId) {
-        try {
-            Map<String, Object> response = meterialService.deletePayment(billNo, paymentId);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Internal server error"));
-        }
-    }
-
-    @GetMapping("/filteredMaterials")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<List<MaterialBillResponseDTO>> getFilteredMaterials(
-            @RequestParam Long vendorId,
-            @RequestParam Long projectId) {
-        List<MaterialBillResponseDTO> materials = meterialService.getFilteredMaterials(vendorId, projectId);
-        return ResponseEntity.ok(materials);
-    }
-    @GetMapping("/filteredSingleMaterials")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<List<SingleMaterialResponseDTO>> getFilteredMaterials(
-            @RequestParam Double billNo,
-            @RequestParam Long projectId,
-            @RequestParam Long vendorId) {
-
-        List<SingleMaterialResponseDTO> materials = meterialService.getMaterialsByBillNoAndProjectIdAndVendorId(billNo, projectId, vendorId);
-        return ResponseEntity.ok(materials);
+    @GetMapping("/material/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<MaterialResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(meterialService.getMaterialById(id));
     }
 
 
-    @GetMapping("/SingleBill/{billNo}/{projectId}")
-    @PreAuthorize("hasAnyRole('Admin','AppUser')")
-    public ResponseEntity<Map<String, Object>> getBillByBillNo(
-            @PathVariable String billNo,
-            @PathVariable Long projectId) {
-        Map<String, Object> billDetail = meterialService.getBillDetailByBillNo(billNo, projectId);
-        return ResponseEntity.ok(billDetail);
-    }
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<MaterialResponse> getAllMaterials(
+            @RequestParam(required = false) Long vendorId,
+            @RequestParam(required = false) Long projectId) {
 
-    //update materials
-    @PutMapping("/UpdateMaterial/{materialId}")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<Map<String,Object>> updateMaterials(
-            @PathVariable Long materialId,
-            @RequestBody MaterialDTO materialDTO){
-        try {
-            Map<String, Object> response = meterialService.updateMaterial(materialId, materialDTO);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Internal server error"));
-        }
+        MaterialResponse response = meterialService.getAllMaterials(vendorId, projectId);
+        return ResponseEntity.ok(response);
     }
 
 
-    @DeleteMapping("/DeleteVendorMeterial/{id}")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<Map<String,String>> deleteMeterial(@PathVariable Long id){
-        try{
-            Material material=materialRepository.findById(id)
-                    .orElseThrow(()-> new ResourceNotFoundException("Meterial ID :"+id+" Not found"));
-            materialRepository.delete(material);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Meterial deleted successfully.");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to delete material."));
-        }
+@PutMapping("/update-items")
+public ResponseEntity<MaterialUpdateResponse> updateMaterialItems(
+        @RequestBody MaterialUpdateRequest request) {
+
+    Material updatedMaterial = meterialService.updateMaterialItemsPartial(request);
+
+    // Prepare response
+    MaterialUpdateResponse response = new MaterialUpdateResponse();
+    response.setMaterialId(updatedMaterial.getId());
+    response.setTotalAmount(updatedMaterial.getTotalAmount());
+    response.setAmountPaid(updatedMaterial.getAmountPaid());
+    response.setBalanceAmount(updatedMaterial.getBalanceAmount());
+
+    List<MaterialItemUpdateResponse> responseItems = updatedMaterial.getItems().stream()
+            .map(i -> {
+                MaterialItemUpdateResponse r = new MaterialItemUpdateResponse();
+                r.setId(i.getId());
+                r.setName(i.getName());
+                r.setPrice(i.getPrice());
+                r.setQuantity(i.getQuantity());
+                r.setUnit(i.getUnit());
+                double price = i.getPrice() != null ? i.getPrice() : 0;
+                int qty = i.getQuantity() != null ? i.getQuantity() : 0;
+                r.setTotalPrice(price * qty);
+                return r;
+            }).toList();
+
+    response.setItems(responseItems);
+
+
+    response.setItems(responseItems);
+    return ResponseEntity.ok(response);
+}
+    @DeleteMapping("/delete-all-material/{materialId}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<String> deleteMaterial(@PathVariable Long materialId) {
+        meterialService.deleteMaterial(materialId);
+        return ResponseEntity.ok("Material deleted successfully");
     }
 
-    @GetMapping("/Material/{id}")
-    @PreAuthorize("hasAnyRole('Admin')")
-    public ResponseEntity<?> getMaterialById(@PathVariable Long id) {
-        try {
-            Material material = materialRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Material ID " + id + " not found"));
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("id", material.getId());
-            response.put("name", material.getName());
-            response.put("type", material.getType());
-            response.put("quantity", material.getQuantity());
-            response.put("price", material.getPrice());
-            response.put("addedOn", material.getAddedOn());
-            response.put("billNo", material.getBillNo());
-
-            return ResponseEntity.ok(response);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to fetch material details."));
-        }
+    @DeleteMapping("/delete-item/{itemId}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<String> deleteMaterialItem(@PathVariable Long itemId) {
+        meterialService.deleteMaterialItem(itemId);
+        return ResponseEntity.ok("Material item deleted and totals updated successfully");
     }
 
-    // delete bill
 
-    @DeleteMapping("/projects/{projectId}/{vendorId}/delete-bill/{billNo}")
-    @PreAuthorize("hasAnyRole('Admin','AppUser')")
-    public ResponseEntity<String> deleteBill(
-            @PathVariable Long projectId,
-            @PathVariable Long vendorId,
-            @PathVariable String billNo) {
-        try {
-            String email = JwtAuthenticationFilter.CURRENT_USER;
-            AppUser appUser = appUserRepository.findByEmail(email);
-            Admin admin = adminRepository.findByEmail(email);
+//    @PostMapping("/add-material-payment/{materialId}")
+//    @PreAuthorize("hasRole('Admin')")
+//    public ResponseEntity<VendorPaymentResponse> addPayment(
+//            @PathVariable Long materialId,
+//            @RequestBody VendorPaymentRequest request) {
+//        return ResponseEntity.ok(meterialService.addPayment(materialId, request));
+//    }
 
-            if (appUser == null && admin == null) {
-                throw new RuntimeException("User not found");
-            }
 
-            Project project = projectRepository.findById(projectId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Project not found with ID: " + projectId));
-
-            Vendor vendor = vendorRepository.findById(vendorId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Vendor not found with ID: " + vendorId));
-
-            List<Material> materialsToDelete = materialRepository.findByProjectIdAndVendorIdAndBillNo(projectId, vendorId, Double.valueOf(billNo));
-
-            if (materialsToDelete.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No materials found for Bill No: " + billNo);
-            }
-
-            materialRepository.deleteAll(materialsToDelete);
-
-            return ResponseEntity.ok("Bill No: " + billNo + " and associated materials deleted successfully.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting bill.");
-        }
+    @PostMapping("/add-material-payment")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<VendorPaymentResponse> addPayment(@RequestBody VendorPaymentRequest request) {
+        VendorPaymentResponse saved = meterialService.addPayment(request);
+        return ResponseEntity.ok(saved);
     }
 
+
+
+    @GetMapping("/show-All-payment")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<List<VendorPaymentResponse>> searchPayments(
+            @RequestParam(required = false) Long vendorId,
+            @RequestParam(required = false) Long projectId) {
+        return ResponseEntity.ok(meterialService.getPayments(vendorId, projectId));
+    }
+    @PutMapping("/update-payment/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<VendorPaymentResponse> updatePayment(
+            @PathVariable Long id,
+            @RequestBody VendorPaymentRequest request) {
+        return ResponseEntity.ok(meterialService.updatePayment(id, request));
+    }
+    @DeleteMapping("/delete-payment/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<String> deletePayment(@PathVariable Long id) {
+        meterialService.deletePayment(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body("Payment deleted successfully");
+    }
+    @GetMapping("/payment/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<VendorPaymentResponse> getPaymentById(@PathVariable Long id) {
+        return ResponseEntity.ok(meterialService.getPaymentById(id));
+    }
 
 }

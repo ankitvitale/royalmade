@@ -36,11 +36,11 @@ public class AppUserController {
         return userService.appUserRegister(appUserDto);
     }
 
-    @GetMapping("/all-supervisors")
-    @PreAuthorize("hasRole('Admin')")
-    public List<AppUserDTO> getAllSupervisors() {
-        return userService.getAllSupervisors();
-    }
+//    @GetMapping("/all-supervisors")
+//    @PreAuthorize("hasRole('Admin')")
+//    public List<AppUserDTO> getAllSupervisors() {
+//        return userService.getAllSupervisors();
+//    }
 
     @GetMapping("/AllSupervisor")
     @PreAuthorize("hasRole('Admin')")

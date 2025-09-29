@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -16,21 +17,22 @@ public class Material {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Double billNo;
-    private String name;
-    private String type;
-    private int quantity;
-    private double price;
-    private LocalDate addedOn;
+
+
+    private LocalDate date;
+    private Double totalAmount;
+    private Double amountPaid;
+    private Double balanceAmount;
+
+    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<MaterialItem> items;
 
     @ManyToOne
     @JoinColumn(name = "vendor_id", nullable = false)
     @JsonBackReference
     private Vendor vendor;
 
-    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<VendorPayment> payments;
 
     @JsonIgnoreProperties(value = { "material" }, allowSetters = true)
     @ManyToOne
@@ -49,53 +51,6 @@ public class Material {
         this.id = id;
     }
 
-    public Double getBillNo() {
-        return billNo;
-    }
-
-    public void setBillNo(Double billNo) {
-        this.billNo = billNo;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public LocalDate getAddedOn() {
-        return addedOn;
-    }
-
-    public void setAddedOn(LocalDate addedOn) {
-        this.addedOn = addedOn;
-    }
 
     public Vendor getVendor() {
         return vendor;
@@ -105,13 +60,6 @@ public class Material {
         this.vendor = vendor;
     }
 
-    public List<VendorPayment> getPayments() {
-        return payments;
-    }
-
-    public void setPayments(List<VendorPayment> payments) {
-        this.payments = payments;
-    }
 
     public AppUser getAddedBy() {
         return addedBy;
@@ -127,5 +75,45 @@ public class Material {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public Double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Double getAmountPaid() {
+        return amountPaid;
+    }
+
+    public void setAmountPaid(Double amountPaid) {
+        this.amountPaid = amountPaid;
+    }
+
+    public Double getBalanceAmount() {
+        return balanceAmount;
+    }
+
+    public void setBalanceAmount(Double balanceAmount) {
+        this.balanceAmount = balanceAmount;
+    }
+
+    public List<MaterialItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<MaterialItem> items) {
+        this.items = items;
     }
 }
